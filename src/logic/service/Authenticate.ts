@@ -13,13 +13,13 @@ export class Authenticate{
         this.tryCounter = 0;
     }
 
-    public async match({email,password}:{email:string,password:string}) {
+    public async match({username,password}:{username:string,password:string}) {
 
         if(this.tryCounter >= this.maxTry){
             return(new MaxTryError());    
         }
 
-        const data = await this.persistence.match({email:email,password:password});
+        const data = await this.persistence.match({username:username,password:password});
      
         this.tryCounter = this.tryCounter++;
         if(data == null){

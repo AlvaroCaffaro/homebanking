@@ -1,14 +1,19 @@
-import { createPostgreConnection } from "../../connection";
 import { Holder} from "../../logic/object/user";
 import { IauthUser } from "../interfaces/interfacesAuth";
 import { holderCreation } from "../type";
 
 export class PostreSQLAuth implements IauthUser{
+    private connection:any;
+
+    constructor(connection:any){
+        this.connection = connection;
+    }
+
     async match({ username, password }: { username: string; password: string; }): Promise<Holder | null > {
        
         let poolConnection;
         try {
-            poolConnection = await createPostgreConnection();
+            poolConnection = await (this.connection).connect();
         } catch (e) {
             throw new Error('fallo la conexion a la base de datos');
         }
@@ -45,7 +50,7 @@ export class PostreSQLAuth implements IauthUser{
        
         let poolConnection;
         try {
-            poolConnection = await createPostgreConnection();
+            poolConnection = await (this.connection).connect();
         } catch (e) {
             throw new Error('fallo la conexion a la base de datos');
         }

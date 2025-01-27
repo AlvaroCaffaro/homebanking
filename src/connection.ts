@@ -1,16 +1,13 @@
 import Pool from 'pg-pool';
 import {config} from './index';
+import { Client } from 'pg';
 // Función para crear una conexión a la base de datos
 
-const pool = new Pool(config);
+const poolPostreSQL:Pool<Client> = new Pool(config);
 
-pool.on('error',(err:any,client:any)=>{
+poolPostreSQL.on('error',(err:any,client:any)=>{
     console.log('error: ', err.message);
 })
 
+export default poolPostreSQL;
 
-export const  createPostgreConnection= async (): Promise<any> => {
-    
-    return pool.connect();
-    
-};

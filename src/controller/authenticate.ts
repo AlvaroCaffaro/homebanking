@@ -16,10 +16,10 @@ export class AuthenticateController{
     };
     
     static async match(req:any,res:any){
-        const {email, password} = req.body;
+        const {username, password} = req.body;
 
         let error:string[] = [];
-        if(!FormValidator.isValidEmail({value: email})){
+        if(!FormValidator.isValidName({value: username})){
             error.push("el email escrito no es valido.");
         }
 
@@ -31,7 +31,7 @@ export class AuthenticateController{
             return res.send({'error': error});
         }
 
-        const result = await Auth.match({email,password});
+        const result = await Auth.match({username,password});
         if(result instanceof Error){
             return res.send({'error': result.message});
         }

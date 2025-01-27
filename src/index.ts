@@ -21,9 +21,9 @@ dotenv.config();
 export const config = {
         user: process.env.DATABASEUSER,  
         password: process.env.DATABASEPASSWORD, 
-        database: 'tu_base_de_datos',
+        database: 'postgres',
         port: Number(process.env.DATABASE_PORT),
-        ssl: true,
+        ssl: false,
 }
 
 
@@ -87,12 +87,18 @@ app.use('/',(req:any,res:any)=>{
 })
 
 app.use('/*',(_:any,res:any)=>{
-    res.render('noExist.ejs');
+    res.send('noExist.ejs');
 })
 
 
-app.listen(process.env.PORT,() => {
-    console.log('Server on port',process.env.PORT);
+app.listen(process.env.PORT, () => {
+    console.log(`Servidor escuchando en el puerto ${process.env.PORT}`);
 });
 
+process.on('uncaughtException', (err) => {
+    console.error('Excepción no controlada:', err);
+});
 
+process.on('unhandledRejection', (reason) => {
+    console.error('Rechazo no manejado:', reason);
+});

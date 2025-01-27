@@ -1,13 +1,20 @@
 import { Account ,map_account} from "../../LOGIC/object/account";
 import { Iaccount } from "../interfaces/interfacesAccount";
 import { accountCreation } from "../type";
-import { createPostgreConnection } from '../../connection';
 
 export class PostreSQLAccount implements Iaccount{
+
+    private connection:any;
+    
+    constructor(connection:any){
+        this.connection = connection;
+    }
+
+
     async create(account: accountCreation): Promise<void> {
         let poolConnection;
         try {
-            poolConnection = await createPostgreConnection();
+            poolConnection = await (this.connection).connect();
         } catch (e) {
             throw new Error('fallo la conexion a la base de datos');
         }
@@ -24,7 +31,7 @@ export class PostreSQLAccount implements Iaccount{
     async get(account_id: bigint): Promise<Account | void> {
         let poolConnection;
         try {
-            poolConnection = await createPostgreConnection();
+            poolConnection = await (this.connection).connect();
         } catch (e) {
             throw new Error('fallo la conexion a la base de datos');
         }

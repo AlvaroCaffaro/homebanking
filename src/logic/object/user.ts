@@ -11,7 +11,7 @@ class Person {
         this.id = p.id;
         this.dni = p.dni;
         this.name = p.name;
-        this.secondName = p.secondName;
+        this.secondName = p.secondname;
         this.lastname = p.lastname;
         
     }
