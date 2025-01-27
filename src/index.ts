@@ -1,10 +1,10 @@
 import express,{Application,Request,Response} from 'express';
 import path from 'path';
 import {authRouter} from  './router/authenticateRouter';
-
-import dotenv from 'dotenv';
+import { PoolConfig } from 'pg';
 import cookieParser from "cookie-parser";
 import jwt from 'jsonwebtoken';
+import { EnvCofig } from './env.config';
 
 
 const app:Application = express();
@@ -13,22 +13,13 @@ app.set('view engine', 'ejs');
 app.set('views', path.join(__dirname, 'view'));
 
 // esto permite que dotenv lea el archivo .env y asigne las variables de entorno a process.env 
-dotenv.config(); 
 
 
-//configuracion para la conexion a la base de datos
-
-export const config = {
-        user: process.env.DATABASEUSER,  
-        password: process.env.DATABASEPASSWORD, 
-        database: 'postgres',
-        port: Number(process.env.DATABASE_PORT),
-        ssl: false,
-}
 
 
 // middlewares
 
+app.use(express.json());  // Para solicitudes con JSON
 // este middleware procesa los datos enviados en una solicitud post. permitiendolos utilizar req.body para acceder a los datos que nos envian desde el formulario de inicio de sesion
 app.use(express.urlencoded({ extended: true }));
 
@@ -47,7 +38,6 @@ app.use((req:any,res:Response,next:any)=>{
 });
 
 */
-
 
 app.use((req:any,res:Response,next:any) => {
     
@@ -84,17 +74,20 @@ app.use('/*',(req:any,res:Response,next:any) => {
 app.use('/',(req:any,res:any)=>{
     const {user} = req.session;
     res.send({user:user});
-})
+});
 
 app.use('/*',(_:any,res:any)=>{
     res.send('noExist.ejs');
-})
-
-
-app.listen(process.env.PORT, () => {
-    console.log(`Servidor escuchando en el puerto ${process.env.PORT}`);
 });
 
+
+const PORT = (Number(process.env.PORT));
+app.listen(PORT, () => {
+    console.log(`Servidor escuchando en el puerto ${PORT}`);
+});
+
+
+// event 
 process.on('uncaughtException', (err) => {
     console.error('Excepción no controlada:', err);
 });

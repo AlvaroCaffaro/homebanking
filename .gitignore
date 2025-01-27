@@ -5,4 +5,5 @@ package-lock.json
 dist/
 tsconfig.json
 src/view/
+src/env.config.ts
 

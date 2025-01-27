@@ -6,13 +6,16 @@ import { Holder } from '../logic/object/user';
 //import { Mailer } from '../LOGIC/service/Mailer';
 
 export class AuthenticateController{
-    static login(req:any,res:any){
+    static async login(req:any,res:any){
         
-        if(req.session.user){ 
-            return res.redirect('/');
-        }
+        //if(req.session.user){ 
+         //   return res.redirect('/');
+        //}
 
-        res.send('login');
+        const value = await Auth.prueba();
+        res.send({'value': value });
+
+
     };
     
     static async match(req:any,res:any){
@@ -20,7 +23,7 @@ export class AuthenticateController{
 
         let error:string[] = [];
         if(!FormValidator.isValidName({value: username})){
-            error.push("el email escrito no es valido.");
+            error.push("el nombre de usuario escrito no es valido.");
         }
 
         if(!FormValidator.isValidPassword({value: password})){
@@ -37,7 +40,7 @@ export class AuthenticateController{
         }
 
         try {
-            const user:Holder = result;
+            const user:Holder = result as Holder;
 
             jwt.sign({id:user.get_id(),name:user.get_username(),email:user.get_email()},process.env.SECRET_KEY as string, 
                {expiresIn:60*60*60*24*65

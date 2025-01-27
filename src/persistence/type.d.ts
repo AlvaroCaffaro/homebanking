@@ -30,3 +30,14 @@ export type accountCreation = {
     currencyId:bigint,
     holderId: bigint,   
 }
+
+
+export type userQuery = {
+    id:string,
+    username:string,
+    person_id:string, 
+    dni:string,
+    name:string,
+    secondname:string,
+    lastname:string
+}

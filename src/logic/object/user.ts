@@ -1,24 +1,20 @@
 import { holder, person } from "../type";
 
 class Person {
-    private id:string;
+    private person_id:string;
     private dni:string;
     private name:string;
     private secondName:string | null;
     private lastname:string;
 
     constructor(p:person){
-        this.id = p.id;
+        this.person_id = p.id;
         this.dni = p.dni;
         this.name = p.name;
         this.secondName = p.secondname;
         this.lastname = p.lastname;
         
     }
-
-        public get_id(){
-            return this.id;
-        }
 
         public get_name(){
             return this.name;
@@ -39,18 +35,17 @@ class Person {
 
 
 
-export class Holder{
+export class Holder extends Person{
     private readonly id:string;
     private email:string;
     private username:string
-    private person: Person;
     
   
     constructor(h:holder){
+        super(h.person);
         this.id = h.id;
         this.username = h.username;
         this.email = h.email;
-        this.person = new Person(h.person)
     }
 
 

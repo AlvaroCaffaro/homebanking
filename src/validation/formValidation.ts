@@ -35,7 +35,7 @@ export class FormValidator{
             return false;
         }
         
-        if(value.length < 6 || value.length > 90){
+        if(value.length < 6 || value.length > 60){
             return false;
         }
 
