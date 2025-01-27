@@ -3,9 +3,10 @@ import { Account } from "../LOGIC/object/account"
 
 
 export type transferCreation = {
-    remmiter_account: Account, // this could be the account's number or alias
-    deliver_accountId:bigint,
-    amount:number,
+    deliver_account:Account | null,
+    remmiter_accountId: bigint,
+    amount_remmiter:number,
+    amount_deliver:number,
     currency_code:string
 }
 

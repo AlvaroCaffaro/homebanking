@@ -1,31 +1,64 @@
 import { createPostgreConnection } from "../../connection";
-import { Holder } from "../../LOGIC/object/user";
+import { Holder} from "../../logic/object/user";
 import { IauthUser } from "../interfaces/interfacesAuth";
 import { holderCreation } from "../type";
 
-class PostreSQLAuth implements IauthUser{
-    async match({ email, password }: { email: string; password: string; }): Promise<Holder | null > {
+export class PostreSQLAuth implements IauthUser{
+    async match({ username, password }: { username: string; password: string; }): Promise<Holder | null > {
        
+        let poolConnection;
         try {
-            const poolConnection = await createPostgreConnection();
+            poolConnection = await createPostgreConnection();
         } catch (e) {
             throw new Error('fallo la conexion a la base de datos');
         }
 
 
-        return null;
+        try {
+            const result =  await poolConnection.query('SELECT * FROM match(?,?)',[username,password]); 
+            
+            if(result == null){
+                return null;
+            }
+        
+            let email = 'pepito@gmail.com';
 
+            return new Holder({
+                id:result.id,
+                username:result.username,
+                email:email,
+                person:{
+                    id:result.person_id, 
+                    dni:result.dni,
+                    name:result.name,
+                    secondname:result.secondname,
+                    lastname:result.lastname
+                }});
 
-        // await createPostgreConnection.query('INNER JOIN ')
-       // utilizar un inner join que devuelva el user junto con el holder si es vacio return null
-       //  
+        } catch (e) {
+            throw new Error('ha ocurrido un error en la base de datos, intente mas tarde.');
+        }
+    
+
     }
     async create(data:holderCreation): Promise<null> {
        
-        return null;
-        // llamar a una funcion que:  crea la persona SI NO ESTA REGISTRADA, crea el holder en estado pendiente
-       // VERIFICAR ESTE ACEPTADA LA CUENTA
-        // await createPostgreConnection.query('select * from ')
+        let poolConnection;
+        try {
+            poolConnection = await createPostgreConnection();
+        } catch (e) {
+            throw new Error('fallo la conexion a la base de datos');
+        }
+
+        try {
+            const result =  await poolConnection.query('call insert_holder(?,?,?,?,?)',[data.person.dni,data.person.name, data.person.lastname,data.username, data.password]); 
+             
+            return result;
+
+        } catch (e) {
+            throw new Error('ha ocurrido un error en la base de datos, intente mas tarde.');
+        }
+
     }
     
 }

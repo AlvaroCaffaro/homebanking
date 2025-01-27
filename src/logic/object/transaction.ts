@@ -1,5 +1,5 @@
 
-import { account, operation, transaction, transfer, typeTransaction, typeTransfer } from "../type";
+import { operation, transaction, transfer, typeTransaction, typeTransfer } from "../type";
 import { Account } from "./account";
 import { Currency } from "./currency";
 
@@ -60,6 +60,10 @@ export class Transaction extends Operation{
         this.account_id = operation.account_id;
         this.type = operation.type;
 
+    }
+
+    public get_account_id(){
+        return this.account_id;
     }
 
     public get_type() {

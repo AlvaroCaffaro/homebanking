@@ -8,7 +8,7 @@ export type person = {
     id:string,
     dni:string,
     name:string,
-    secondName:string|null,
+    secondname:string|null,
     lastname:string
     
 }

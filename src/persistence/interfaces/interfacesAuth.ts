@@ -3,6 +3,6 @@ import { holderCreation } from "../type";
 
 export interface IauthUser{
 
-    match({email,password}:{email:string,password:string}):Promise<Holder|null>;
+    match({username,password}:{username:string,password:string}):Promise<Holder|null>;
     create(data:holderCreation):Promise<null>;
 }

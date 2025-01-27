@@ -1,4 +1,4 @@
-import {createTransport} from 'nodemailer';
+/*import {createTransport} from 'nodemailer';
 import { EmailSendFailureError } from  '../object/error';
 
 export class Mailer{
@@ -64,3 +64,4 @@ export class Mailer{
 }
 
 
+*/

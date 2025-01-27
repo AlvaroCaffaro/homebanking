@@ -1,3 +1,3 @@
 export interface Icurrency{
-    getQuoteInLocalCurrency():Promise<number>;
+    getQuoteInLocalCurrency({baseCurrency,targetCurrency}:{baseCurrency:string,targetCurrency:string}):Promise<number>;
 }
