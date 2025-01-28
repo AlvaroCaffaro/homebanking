@@ -19,5 +19,14 @@ poolPostreSQL.on('error',(err:any,client:any)=>{
 poolPostreSQL.on('connect',(client)=>{
     console.log('cliente Connectado: ');
 })
+
+poolPostreSQL.on('release',(err,client)=>{
+    if(err){ 
+        console.log(err);
+        return;
+    }
+    
+    console.log('cliente desconectado');
+})
 export default poolPostreSQL;
 

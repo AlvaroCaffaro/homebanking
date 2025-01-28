@@ -2,6 +2,8 @@ import { Pool } from "pg";
 import { Holder} from "../../logic/object/user";
 import { IauthUser } from "../interfaces/interfacesAuth";
 import { holderCreation, userQuery } from "../type";
+import bcrypt from 'bcryptjs';
+import { EnvCofig } from "../../env.config";
 
 export class PostreSQLAuth implements IauthUser{
     private pool:Pool;
@@ -21,14 +23,15 @@ export class PostreSQLAuth implements IauthUser{
 
 
         try {
-            const result:any =  await poolConnection.query('SELECT * FROM person.person'); 
+            const result =  await poolConnection.query('SELECT * FROM person.person'); 
             
             //console.log('res: ', result);
-            return result.rows;
-            if(result == null){
+            if(result.rowCount == 0){
                 return null;
             }
         
+            return result.rows;
+
 
         } catch(e){
 
@@ -51,32 +54,38 @@ export class PostreSQLAuth implements IauthUser{
             throw e;
             //throw new Error('fallo la conexion a la base de datos');
         }
-
-
+    
         try {
-            const result =  await poolConnection.query('SELECT * FROM match($1,$2)',[username,password]); 
-            
-            return (result.rows) as any;
-            if(result == null){
+
+            const result =  await poolConnection.query('SELECT * FROM person.match($1)',[username]); 
+           
+            if(result.rowCount == 0){
+                return null;
+            }
+
+            const data:userQuery = result.rows[0];
+            const isMatch = await bcrypt.compare(password, data.hashed_password);
+
+            if(!isMatch){
                 return null;
             }
         
-            let email = 'pepito@gmail.com';
 
-          /*  return new Holder({
-                id:result.id,
-                username:result.username,
-                email:email,
+            return new Holder({
+                id:data.id,
+                username:data.username,
+                email:data.email,
                 person:{
-                    id:result.person_id, 
-                    dni:result.dni,
-                    name:result.name,
-                    secondname:result.secondname,
-                    lastname:result.lastname
+                    id:data.person_id, 
+                    dni:data.dni,
+                    name:data.name,
+                    secondname:data.secondname,
+                    lastname:data.lastname
                 }});
-*/
+
         } catch (e) {
-            throw new Error('ha ocurrido un error en la base de datos, intente mas tarde.');
+            throw e;
+            //throw new Error('ha ocurrido un error en la base de datos, intente mas tarde.');
         } finally{
             poolConnection.release(); // Libera el cliente de vuelta al pool
         }
@@ -85,6 +94,18 @@ export class PostreSQLAuth implements IauthUser{
     }
     async create(data:holderCreation): Promise<null> {
        
+
+        let password_hash;
+        try {
+            const salt_round = EnvCofig.salt_round;
+            const salt = await bcrypt.genSalt(salt_round);
+            password_hash = await bcrypt.hash(data.password,salt);
+
+        } catch (e) {
+            throw new Error('Error al encriptar la contraseña');
+        }
+
+
         let poolConnection;
         try {
             poolConnection = await (this.pool).connect();
@@ -93,13 +114,15 @@ export class PostreSQLAuth implements IauthUser{
         }
 
         try {
-            const result =  await poolConnection.query('call insert_holder(?,?,?,?,?)',[data.person.dni,data.person.name, data.person.lastname,data.username, data.password]); 
-
+            const result =  await poolConnection.query('call person.insert_holder($1,$2,$3,$4,$5,$6,$7)',[data.person.dni,data.person.name,data.person.secondname, data.person.lastname,data.email,data.username, password_hash]);
             return null;
-            //return result;
 
         } catch (e) {
-            throw new Error('ha ocurrido un error en la base de datos, intente mas tarde.');
+            throw e;
+            //throw new Error('ha ocurrido un error en la base de datos, intente mas tarde.');
+        
+        } finally{
+            poolConnection.release();
         }
 
     }

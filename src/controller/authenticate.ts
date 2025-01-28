@@ -3,6 +3,7 @@ import jwt from 'jsonwebtoken';
 
 import {FormValidator} from '../validation/formValidation'
 import { Holder } from '../logic/object/user';
+import { EnvCofig } from '../env.config';
 //import { Mailer } from '../LOGIC/service/Mailer';
 
 export class AuthenticateController{
@@ -42,22 +43,33 @@ export class AuthenticateController{
         try {
             const user:Holder = result as Holder;
 
-            jwt.sign({id:user.get_id(),name:user.get_username(),email:user.get_email()},process.env.SECRET_KEY as string, 
-               {expiresIn:60*60*60*24*65
-                },( (err:any, token:any) => {
-                    if(err){
-                        return res.send({'error': err});
-                    }
+            const token = jwt.sign(
+                    {
+                        id:user.get_id(),
+                        name:user.get_username(),
+                        email:user.get_email()
 
-                    return (res.cookie('access_token',token,{
-                        httpOnly:true,
-                        secure:false,
-                    }).redirect('/'));
+                    },
+                        EnvCofig.secret_key, 
 
-                  })
-        );
-            
+                        {
+                            expiresIn:60*60*60*24*10 // 10 days
+                        }
+                    );
 
+                    return (res.setHeader('Authorization', `Bearer ${token}`)).send('welcome');
+
+                    /*return (res.cookie(
+                                'access_token',
+                                token,
+                                {
+                                    httpOnly:true,
+                                    secure:false,
+                                }
+                            
+                    ).redirect('/'));
+                    */
+        
         } catch (err) {
             /*return res.render('login',{
                 error: ['Ha ocurrido un error al conectarse al servidor'],
@@ -101,15 +113,19 @@ export class AuthenticateController{
             return res.send({'error':error});
         }
 
-        const result:any = await Auth.register({email,username,password,person:{
+        const result = await Auth.register({email,username,password,person:{
             dni,name,secondname,lastname
         }});
         
         if(result instanceof Error){
-            return res.render('register',{
-                error: [result.message]
-            });
+            return res.send({'error':result.message});
+
+           // return res.render('register',{
+            //    error: [result.message]
+            //});
         }
+
+        res.send({'succed':'se ha creado el usuario'});
 
         /*const mailer = Mailer.get_instance();
 

@@ -39,6 +39,8 @@ app.use((req:any,res:Response,next:any)=>{
 
 */
 
+
+/*
 app.use((req:any,res:Response,next:any) => {
     
     req.session = {user:null};
@@ -60,14 +62,28 @@ app.use((req:any,res:Response,next:any) => {
 
 
 });
-
+*/
 app.use('/',authRouter);
 
 //protected routes (only registered users)
-app.use('/*',(req:any,res:Response,next:any) => {
-    if(!req.session.user){
+app.use('/*',(req:any,res:any,next:any) => {
+    const header:string | undefined = res.header['Authorization'] ;
+    if(header == undefined){
         return res.status(403).redirect('/login');
     }
+
+    const token = header.split(' ')[1];
+
+    try{
+        // verificamos si el token que se encontraba en la cookie es valido. En caso que no lo sea lanzaria un error sino iniciamos la sesion
+        const data = jwt.verify(token,process.env.SECRET_KEY as string);
+        req.session.user = data;
+        next();
+
+    } catch(e){
+        return res.status(403).redirect('/login');
+    }
+    
     next();
 });
 

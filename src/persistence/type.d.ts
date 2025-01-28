@@ -35,6 +35,8 @@ export type accountCreation = {
 export type userQuery = {
     id:string,
     username:string,
+    hashed_password:string,
+    email:string,
     person_id:string, 
     dni:string,
     name:string,

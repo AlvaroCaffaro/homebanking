@@ -40,8 +40,14 @@ export class Authenticate{
 
     public async register( data: holderCreation): Promise<Error | null>{
 
-        const error = await this.persistence.create(data);
-        return error;
+        try {
+            await this.persistence.create(data);
+            return null;
+                 
+        } catch (e) {
+            return e as Error;
+        }
+      
     }
 
     public async prueba (){

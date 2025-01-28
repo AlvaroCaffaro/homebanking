@@ -1,6 +1,6 @@
 import { holder, person } from "../type";
 
-class Person {
+export class Person {
     private person_id:string;
     private dni:string;
     private name:string;
