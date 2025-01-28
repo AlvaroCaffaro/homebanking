@@ -2,7 +2,7 @@ import { Icurrency } from "../../persistence/interfaces/interfacesCurrency";
 import { Ioperations } from "../../persistence/interfaces/interfacesTransaction";
 import { transferCreation } from "../../persistence/type";
 import { Account } from "../object/account";
-import { Transfer } from "../object/transaction";
+
 
 export class TransferCreator{
     private transfer:transferCreation | null;

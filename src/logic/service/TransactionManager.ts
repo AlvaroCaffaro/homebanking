@@ -20,7 +20,7 @@ export class OperationManager{
         }
     }
 
-    async getOperation(accountId:bigint,from:Date,to:Date){
+    async getOperations(accountId:bigint,from:Date,to:Date){
 
         try {
             const res = await this.persistenceOperation.getOperations(accountId,from,to);  
