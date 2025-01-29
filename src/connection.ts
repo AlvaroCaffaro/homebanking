@@ -28,5 +28,7 @@ poolPostreSQL.on('release',(err,client)=>{
     
     console.log('cliente desconectado');
 })
+
+
 export default poolPostreSQL;
 

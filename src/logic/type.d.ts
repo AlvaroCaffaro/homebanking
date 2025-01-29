@@ -1,23 +1,16 @@
-import { Currency } from "./object/currency";
+import { personQuery } from "../persistence/type";
 
 export type typeTransaction = 'deposit' | 'extract';
 export type typeTransfer = 'recived' | 'sent';
 
 
-export type person = {
-    id:string,
-    dni:string,
-    name:string,
-    secondname:string|null,
-    lastname:string
-    
-}
+
 
 export type holder = {
     id:string,
     username:string,
     email:string,
-    person:person
+    person:personQuery
 }
 
 export type currency = {
@@ -48,9 +41,14 @@ export interface transfer extends operation{
 
 export type account = {
     id:bigint,
-    number: string,
-    dni: string,
-    currency:currency,
-    balance:number
+    number:string,
+    holder_id:string,
+    holder_dni:string,
+    alias: string,
+    currency_id:bigint,
+    currency_name:string,
+    currency_code: string
+    balance:number,
+    state:string
 }
 

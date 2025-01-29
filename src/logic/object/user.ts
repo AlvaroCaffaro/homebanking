@@ -1,4 +1,5 @@
-import { holder, person } from "../type";
+import { personQuery, userQuery } from "../../persistence/type";
+import { holder } from "../type";
 
 export class Person {
     private person_id:string;
@@ -7,7 +8,7 @@ export class Person {
     private secondName:string | null;
     private lastname:string;
 
-    constructor(p:person){
+    constructor(p:personQuery){
         this.person_id = p.id;
         this.dni = p.dni;
         this.name = p.name;

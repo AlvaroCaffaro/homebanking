@@ -4,19 +4,12 @@ import jwt from 'jsonwebtoken';
 import {FormValidator} from '../validation/formValidation'
 import { Holder } from '../logic/object/user';
 import { EnvCofig } from '../env.config';
+import { generateAlias } from '../utils/generateAlias';
 //import { Mailer } from '../LOGIC/service/Mailer';
 
 export class AuthenticateController{
     static async login(req:any,res:any){
-        
-        //if(req.session.user){ 
-         //   return res.redirect('/');
-        //}
-
-        const value = await Auth.prueba();
-        res.send({'value': value });
-
-
+        res.send({'value ':generateAlias()});
     };
     
     static async match(req:any,res:any){
@@ -57,7 +50,9 @@ export class AuthenticateController{
                         }
                     );
 
-                    return (res.setHeader('Authorization', `Bearer ${token}`)).send('welcome');
+                    return (res.JSON({
+                        'token': token
+                    }));
 
                     /*return (res.cookie(
                                 'access_token',

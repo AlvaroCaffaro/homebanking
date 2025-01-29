@@ -6,7 +6,7 @@ const ErrorName ={
     'MaxTryError':'Ya superaste el limite de intentos, pruebe mas tarde.',
     'IncorrectDataError':'Los datos ingresados son incorrectos.',
     'EmailSendFailureError':'Ha ocurrido un error al enviar el email',
-    
+    'RegisteredUserError':'El dni o el usuario ya han sido utilizados',
 
 }
 
@@ -59,5 +59,12 @@ export class EmailSendFailureError extends Error{
     constructor(){
         super(ErrorName['EmailSendFailureError']);
         this.name = 'EmailSendFailureError';
+    }
+}
+
+export class RegisteredUserError extends Error{
+    constructor(){
+        super(ErrorName['RegisteredUserError']);
+        this.name = 'RegisteredUserError';
     }
 }

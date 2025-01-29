@@ -32,6 +32,14 @@ export type accountCreation = {
 }
 
 
+export type personQuery = {
+    id:string,
+    dni:string,
+    name:string,
+    secondname:string,
+    lastname:string
+}
+
 export type userQuery = {
     id:string,
     username:string,
@@ -42,4 +50,17 @@ export type userQuery = {
     name:string,
     secondname:string,
     lastname:string
+}
+
+export type accountQuery = {
+    id:bigint,
+    number:string,
+    holder_id:string,
+    holder_dni:string,
+    alias: string,
+    currency_id:bigint,
+    currency_code:string,
+    currency_name:string,
+    balance:number,
+    state:string
 }

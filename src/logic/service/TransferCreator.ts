@@ -47,7 +47,11 @@ export class TransferCreator{
         }
         
         try{
-            const rate = await this.currencyPersistence.getQuoteInLocalCurrency({baseCurrency:this.transfer.currency_code,targetCurrency:this.transfer.deliver_account.get_currency_code()});
+            const rate = await this.currencyPersistence.getQuoteInLocalCurrency({
+                baseCurrency:this.transfer.currency_code,
+                targetCurrency:this.transfer.deliver_account.get_currency().get_code()
+            });
+
             this.transfer.amount_deliver = rate* this.transfer.amount_remmiter;
             
         } catch(e){
@@ -63,7 +67,7 @@ export class TransferCreator{
         }
     }
 
-
+/*
     async clear(){
         if(this.transfer == null){
             return;
@@ -71,4 +75,5 @@ export class TransferCreator{
         this.transfer = null;
 
     }
+        */
 }

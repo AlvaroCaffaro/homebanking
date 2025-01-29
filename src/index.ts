@@ -12,8 +12,8 @@ const app:Application = express();
 app.set('view engine', 'ejs');
 app.set('views', path.join(__dirname, 'view'));
 
-// esto permite que dotenv lea el archivo .env y asigne las variables de entorno a process.env 
-
+// esto permite que javaScript asigne todas las variables del archivo .env en process.env
+process.loadEnvFile();
 
 
 
@@ -63,11 +63,33 @@ app.use((req:any,res:Response,next:any) => {
 
 });
 */
+
+
+
 app.use('/',authRouter);
+
+app.use((req:any,res,next)=>{
+    const token = req.params.token;
+
+    if(!token){
+        res.status(403).send('usuario no verificado');
+    }
+
+    try {
+        const data = jwt.verify(token,process.env.SECRET_KEY as string);
+        req.session.user = data;
+        next();
+
+    } catch (e) {
+        res.status(403).send('usuario no verificado');
+    }
+
+});
+
 
 //protected routes (only registered users)
 app.use('/*',(req:any,res:any,next:any) => {
-    const header:string | undefined = res.header['Authorization'] ;
+   /* const header:string | undefined = res.header['Authorization'] ;
     if(header == undefined){
         return res.status(403).redirect('/login');
     }
@@ -83,17 +105,17 @@ app.use('/*',(req:any,res:any,next:any) => {
     } catch(e){
         return res.status(403).redirect('/login');
     }
-    
+    */
     next();
 });
 
-app.use('/',(req:any,res:any)=>{
+app.use('/:token',(req:any,res:any)=>{
     const {user} = req.session;
     res.send({user:user});
 });
 
 app.use('/*',(_:any,res:any)=>{
-    res.send('noExist.ejs');
+    res.send('ruta no existente');
 });
 
 

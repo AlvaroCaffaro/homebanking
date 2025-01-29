@@ -1,3 +1,4 @@
+import { accountQuery } from "../../persistence/type";
 import { account } from "../type";
 import { Currency } from "./currency";
 
@@ -5,15 +6,21 @@ export class Account {
     
     private id:bigint;
     private number: string;
-    private dniHolder: string;
+    private holder_id:string;
+    private holder_dni: string;
     private currency:Currency;
     private balance:number;
 
-    constructor(account:account) {
+    constructor(account:accountQuery) {
         this.id = account.id;
         this.number = account.number;
-        this.dniHolder = account.dni;
-        this.currency = new Currency(account.currency);
+        this.holder_id = account.holder_id;
+        this.holder_dni = account.holder_dni;
+        this.currency = new Currency({
+            id:account.currency_id,
+            code:account.currency_code,
+            name:account.currency_name
+        });
         this.balance = 0;
     }
 
@@ -21,17 +28,22 @@ export class Account {
         return this.id;
     }
 
+    public get_holder_id(){
+        return this.holder_id;
+    }
+
     public get_number(){
         return this.number;
     }
 
     public get_dni(){
-        return this.dniHolder;
+        return this.holder_dni;
     }
 
-    public get_currency_code(){
-        return this.currency.get_code();
+    public get_currency(){
+        return this.currency;       
     }
+
 
     public get_balance(){
         return this.balance;
@@ -41,6 +53,6 @@ export class Account {
 
 
 
-export const map_account =(data:any[])=>{
-    data.map((e:account)=> new Account(e));
+export const map_account = (data:accountQuery[]) =>{
+    data.map((e:accountQuery)=> new Account(e));
 }

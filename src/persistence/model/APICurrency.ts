@@ -10,6 +10,7 @@ export class CurrencyDB implements Icurrency{
         try {
             const response = await fetch(url);
             const data = await response.json();
+            if(data.result != 'success') throw Error();
             const rate = data.conversion_rates[targetCurrency];
         
             const value:number = Number(rate);
