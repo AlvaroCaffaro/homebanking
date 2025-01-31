@@ -1,40 +1,90 @@
+import { Iaccount } from "../../persistence/interfaces/interfacesAccount";
 import { Icurrency } from "../../persistence/interfaces/interfacesCurrency";
-import { Ioperations } from "../../persistence/interfaces/interfacesTransaction";
 import { transferCreation } from "../../persistence/type";
 import { Account } from "../object/account";
 
 
 export class TransferCreator{
     private transfer:transferCreation | null;
-    private operationPersistence:Ioperations;
+    private accountPersistence:Iaccount;
     private currencyPersistence:Icurrency;
-    private error_message = 'no se puede realizar la transferencia'
+    private error_message = 'no se puede realizar la transferencia';
 
-    constructor({remmiter_accountId,currency_code,operationPersistence,currencyPersistence}:{remmiter_accountId:bigint,currency_code:string,operationPersistence:Ioperations,currencyPersistence:Icurrency}){
+    constructor({accountPersistence,currencyPersistence}:{accountPersistence:Iaccount,currencyPersistence:Icurrency}){
        this.transfer = {
-            remmiter_accountId: remmiter_accountId,
-            deliver_account: null,
-            amount_deliver: 0,
-            amount_remmiter:0,
-            currency_code: currency_code
+            remitter_account: {
+                account_id:null,
+                currency_code:null,
+                currency_id:null
+            },
+            destination_account: {
+                account_id:null,
+                currency_code:null,
+                currency_id:null
+            },
+            destination_amount: 0,
+            remitter_amount:0,
        };
 
-       this.operationPersistence = operationPersistence;
+
+       this.accountPersistence = accountPersistence;
        this.currencyPersistence = currencyPersistence;
     }
 
+
+    set_remitter({remitter_accountId,remitter_currencyId,remitter_currencyCode}:{remitter_accountId:bigint,remitter_currencyId:bigint,remitter_currencyCode:string}){
+
+        if(this.transfer == null) return new Error(this.error_message);
+
+        this.transfer.remitter_account = {
+            account_id:remitter_accountId,
+            currency_id:remitter_currencyId,
+            currency_code:remitter_currencyCode
+        };
+    }
     
 
-    set_remmiter(account:Account){
-        (this.transfer as transferCreation).deliver_account = account;
-    }
+    async set_destination(identifier:string){
 
-    set_amount(amount:number){
         if(this.transfer == null) return new Error(this.error_message);
+        try {
+           const result:Account = await this.accountPersistence.get(identifier); 
+           this.transfer.destination_account = {
+                account_id:result.get_id(),
+                currency_id:result.get_currency().get_id(),
+                currency_code: result.get_currency().get_code()
+           }
         
-        this.transfer.amount_remmiter = amount;
+            return(result);
+        
+        } catch (e) {
+            return e;
+        }
 
     }
+
+    async set_amount(amount:number){
+
+        if(this.transfer == null) return new Error(this.error_message);
+        if(this.transfer.destination_account.currency_code == null) return new Error('La cuenta destino debe ser seleccionada primero.');
+        if(this.transfer.remitter_account.currency_code == null) return new Error('fff');
+        this.transfer.remitter_amount = amount;
+
+        try{
+            const rate = await this.currencyPersistence.getQuoteInLocalCurrency({
+                baseCurrency:this.transfer.remitter_account.currency_code ,
+                targetCurrency:this.transfer.destination_account.currency_code
+            });
+
+            this.transfer.destination_amount = rate* this.transfer.remitter_amount;
+            
+        } catch(e){
+            return e;
+        }
+
+
+    }
+
 
     async create(){
 
@@ -42,32 +92,22 @@ export class TransferCreator{
             return new Error(this.error_message);
         }
 
-        if(this.transfer.deliver_account == null){ 
+        if(this.transfer.destination_account == null){ 
             return new Error(this.error_message);
         }
         
-        try{
-            const rate = await this.currencyPersistence.getQuoteInLocalCurrency({
-                baseCurrency:this.transfer.currency_code,
-                targetCurrency:this.transfer.deliver_account.get_currency().get_code()
-            });
-
-            this.transfer.amount_deliver = rate* this.transfer.amount_remmiter;
-            
-        } catch(e){
-            return e;
-        }
-
 
 
         try {
-            await this.operationPersistence.createTransfer(this.transfer);            
+            await this.accountPersistence.createTransfer(this.transfer);
+            this.clear();       
         } catch (e) {
             return e;
         }
+
     }
 
-/*
+
     async clear(){
         if(this.transfer == null){
             return;
@@ -75,5 +115,5 @@ export class TransferCreator{
         this.transfer = null;
 
     }
-        */
+        
 }

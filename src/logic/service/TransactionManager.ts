@@ -1,29 +1,27 @@
-import { Icurrency } from "../../persistence/interfaces/interfacesCurrency";
-import { Ioperations } from "../../persistence/interfaces/interfacesTransaction";
-import { Account } from "../object/account";
-import { Currency } from "../object/currency";
+import { Iaccount } from "../../persistence/interfaces/interfacesAccount";
+import { Datetime } from "../../utils/date";
 
 
 export class OperationManager{
-    private persistenceOperation:Ioperations;
+    private accountPersistence:Iaccount;
 
-    constructor(persistenceOperation:Ioperations,persistenceCurrency:Icurrency){
-        this.persistenceOperation = persistenceOperation;
+    constructor({accountPersistence}:{accountPersistence:Iaccount}){
+        this.accountPersistence = accountPersistence;
     }
 
-    async getAllOperations(accountId:bigint){
+    async getAllOperations(idAccount:bigint,end:Datetime){
         try{
-            const res = await this.persistenceOperation.getAllOperations(accountId);
+            const res = await this.accountPersistence.getAllOperations({idAccount,end});
             return res;
         } catch(e){
             return e;
         }
     }
 
-    async getOperations(accountId:bigint,from:Date,to:Date){
+    async getOperations(idAccount:bigint,from:Datetime,to:Datetime){
 
         try {
-            const res = await this.persistenceOperation.getOperations(accountId,from,to);  
+            const res = await this.accountPersistence.getOperations({idAccount,from,to});  
             return res;  
         
         } catch (e) {

@@ -1,5 +1,5 @@
 import { IinformationUser } from "../../persistence/interfaces/interfacesInformation";
-import { Account } from "../object/account";
+import { Account, PersonalAccount } from "../object/account";
 import { Person } from "../object/user";
 
 export class InformationUser{
@@ -20,7 +20,7 @@ export class InformationUser{
         }
 
     }
-    async get_accounts({ id }: { id: string; }): Promise<Account[] | Error> {
+    async get_accounts({ id }: { id: string; }): Promise<PersonalAccount[] | Error> {
         try{
             const result = await this.persistence.get_accounts({id});
             if(result == null){

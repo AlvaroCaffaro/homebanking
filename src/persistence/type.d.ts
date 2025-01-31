@@ -1,13 +1,18 @@
 import { Account } from "../LOGIC/object/account"
+import { Datetime } from "../utils/date";
 
 
+export type accountShortData = {
+    account_id:bigint | null,
+    currency_id:bigint | null,
+    currency_code:string | null,
+};
 
 export type transferCreation = {
-    deliver_account:Account | null,
-    remmiter_accountId: bigint,
-    amount_remmiter:number,
-    amount_deliver:number,
-    currency_code:string
+    destination_account:accountShortData,
+    remitter_account: accountShortData ,
+    remitter_amount:number,
+    destination_amount:number,
 }
 
 
@@ -52,15 +57,41 @@ export type userQuery = {
     lastname:string
 }
 
+export type personalAccountQuery = {
+    id:bigint,
+    number:uuid,
+    alias:string,
+    currency_id:bigint,
+    currency_code:string,
+    currency_name:string,
+    balance:bigint,
+    state:string
+}
+
+
 export type accountQuery = {
     id:bigint,
     number:string,
     holder_id:string,
     holder_dni:string,
-    alias: string,
+    holder_name:string,
+    holder_secondname:string,
+    holder_lastname:string,
+    alias:string,
+    currency_id:bigint,
+    currency_code:string,
+    currency_name:string
+}
+
+export type transferQuery ={
+    id:bigint,
+    code:string,
+    date_t:Datetime,
+    destination_account:bigint,
+    remitter_account:bigint,
     currency_id:bigint,
     currency_code:string,
     currency_name:string,
-    balance:number,
-    state:string
+    amount:number,
+    type_t:string
 }

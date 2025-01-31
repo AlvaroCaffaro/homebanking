@@ -1,7 +1,11 @@
 import { Account } from "../../LOGIC/object/account";
-import { accountCreation } from "../type";
+import { Transfer } from "../../logic/object/transaction";
+import { Datetime } from "../../utils/date";
+import { transferCreation } from "../type";
 
 export interface Iaccount {
-    create(account:accountCreation):Promise<void>;
-    get(account_id:bigint):Promise<Account | void>;
+    get(identifier:string):Promise<Account>;  // this could be the alias or the account number
+    createTransfer(tranfer:transferCreation):Promise<null>;
+    getOperations({idAccount,from,to}:{idAccount:bigint,from:Datetime,to:Datetime}):Promise<Transfer[]>
+    getAllOperations({idAccount,end}:{idAccount:bigint,end:Datetime}):Promise<Transfer[]>;
 }

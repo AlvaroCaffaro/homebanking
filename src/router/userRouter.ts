@@ -1,9 +1,10 @@
 import {Router} from  'express';
-import {AuthenticateController} from '../controller/authenticate';
+import {UserController} from '../controller/user';
 
 export const userRouter = Router();
 
-userRouter.get('/login',AuthenticateController.login);
-userRouter.post('/login', AuthenticateController.match);
-userRouter.get('/register',AuthenticateController.register);
-userRouter.post('/register',AuthenticateController.create);
+userRouter.get('/',UserController.get_personalInformation);
+userRouter.get('/user',UserController.get_userInformation);
+userRouter.get('/account',UserController.get_personalAccounts);
+
+

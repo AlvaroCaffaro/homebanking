@@ -1,10 +1,10 @@
-import { Account } from "../LOGIC/object/account";
-import { Person } from "../logic/object/user";
-import { Information } from "../logic/dependenciesAuth"
-export class userController{
+
+import { Information } from "../logic/dependenciesUser"
+
+export class UserController{
 
 
-    public async get_personalInformation(req:any,res:any){
+    static async get_personalInformation(req:any,res:any){
 
         const person = await Information.get_personalInfromation(req.session.id);
         
@@ -21,8 +21,8 @@ export class userController{
             data: {
                 "dni": person.get_dni(),
                 "name": person.get_name(),
-                "secondname":person.get_secondName(),
-                "lastname": person.get_secondName()  
+                "secondname":person.get_secondname(),
+                "lastname": person.get_secondname()  
             },
             result:'success',
             message: ''
@@ -31,7 +31,18 @@ export class userController{
 
     }
 
-    public async get_personalAccounts(req:any,res:any){
+    static async get_userInformation(req:any,res:any){
+        res.json({
+            data:{
+                username:req.session.name,
+                email:req.session.email
+            },
+            result:'success',
+            message:''
+        });
+    }
+
+    static async get_personalAccounts(req:any,res:any){
         const account = await Information.get_accounts(req.session.id);
 
         if(account instanceof Error){
@@ -49,14 +60,14 @@ export class userController{
             c = a.get_currency();
             data.push({
                 'id':a.get_id(),
-                'holder_id': a.get_holder_id(),
-                'holder_dni': a.get_dni(),
+                'number':a.get_number(),
                 'balance':a.get_balance(),
                 'currency':{
                     'id':c.get_id(),
                     'name':c.get_name(),
                     'code':c.get_code()
-                }
+                },
+                'state': a.get_state()
 
             });
         }

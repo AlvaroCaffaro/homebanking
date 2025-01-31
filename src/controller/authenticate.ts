@@ -70,7 +70,13 @@ export class AuthenticateController{
                 error: ['Ha ocurrido un error al conectarse al servidor'],
                 created:false,
             });*/
-            return res.send({'error': ['Ha ocurrido un error al conectarse al servidor']})
+
+            return res.json({
+                message:['Ha ocurrido un error al conectarse al servidor'],
+                result: 'failure',
+                data:null
+            });
+            //return res.send({'error': ['Ha ocurrido un error al conectarse al servidor']})
         }
     };
 
@@ -79,7 +85,9 @@ export class AuthenticateController{
             error:[],
         });*/
 
-        res.send('welcome register');
+        res.json({ 
+            welcome: 'welcome register'
+        });
 
     }
 
@@ -105,7 +113,11 @@ export class AuthenticateController{
               //  error: error
             //});
 
-            return res.send({'error':error});
+            return res.json({
+                message:error,
+                result: 'failure',
+                data:null
+            });
         }
 
         const result = await Auth.register({email,username,password,person:{
@@ -113,14 +125,26 @@ export class AuthenticateController{
         }});
         
         if(result instanceof Error){
-            return res.send({'error':result.message});
+            //return res.send({'error':result.message});
+
+            return res.json({
+                message:[result.message],
+                result: 'failure',
+                data:null
+            });
 
            // return res.render('register',{
             //    error: [result.message]
             //});
         }
 
-        res.send({'succed':'se ha creado el usuario'});
+        return res.json({
+            message:['Se ha creado el correctamente el usuario. En los proximos dias su cuenta será validada'],
+            result: 'success',
+            data:null
+        });
+
+        // res.send({'success':'se ha creado el usuario'});
 
         /*const mailer = Mailer.get_instance();
 

@@ -5,6 +5,8 @@ import { PoolConfig } from 'pg';
 import cookieParser from "cookie-parser";
 import jwt from 'jsonwebtoken';
 import { EnvCofig } from './env.config';
+import { userRouter } from './router/userRouter';
+import { accountRouter } from './router/accountRouter';
 
 
 const app:Application = express();
@@ -81,38 +83,27 @@ app.use((req:any,res,next)=>{
         next();
 
     } catch (e) {
-        res.status(403).send('usuario no verificado');
+        res.status(403).json({
+            message:'usuario no verificado',
+            status:'failure',
+            data:null
+        });
     }
 
 });
 
 
 //protected routes (only registered users)
-app.use('/*',(req:any,res:any,next:any) => {
-   /* const header:string | undefined = res.header['Authorization'] ;
-    if(header == undefined){
-        return res.status(403).redirect('/login');
-    }
-
-    const token = header.split(' ')[1];
-
-    try{
-        // verificamos si el token que se encontraba en la cookie es valido. En caso que no lo sea lanzaria un error sino iniciamos la sesion
-        const data = jwt.verify(token,process.env.SECRET_KEY as string);
-        req.session.user = data;
-        next();
-
-    } catch(e){
-        return res.status(403).redirect('/login');
-    }
-    */
-    next();
-});
-
+/*
 app.use('/:token',(req:any,res:any)=>{
     const {user} = req.session;
     res.send({user:user});
 });
+*/
+
+app.use('/:token',userRouter);
+
+app.use('/:token/:account',accountRouter);
 
 app.use('/*',(_:any,res:any)=>{
     res.send('ruta no existente');

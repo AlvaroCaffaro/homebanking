@@ -1,21 +1,31 @@
 
-import { operation, transaction, transfer, typeTransaction, typeTransfer } from "../type";
-import { Account } from "./account";
+import { transferQuery } from "../../persistence/type";
+import { Datetime } from "../../utils/date";
 import { Currency } from "./currency";
 
-abstract class Operation{
+
+export class Transfer {
+
     private id:bigint;
     private code:string;
-    private date:Date;
+    private date:Datetime;
     private amount:number;
     private currency:Currency;
+    private destintation_account:bigint;
+    private remitter_account:bigint;
+    private type:string;
 
-    constructor(operation:operation){
+    constructor(operation:transferQuery){
+
         this.id = operation.id;
         this.code = operation.code;
-        this.date = operation.date;
+        this.date = operation.date_t;
         this.amount = operation.amount;
-        this.currency =  new Currency(operation.currency);
+        this.currency =  new Currency({id:operation.currency_id, name:operation.currency_name, code:operation.currency_code});
+        this.destintation_account = operation.destination_account;
+        this.remitter_account = operation.remitter_account;
+        this.type = operation.type_t;
+
     }
 
     
@@ -39,74 +49,14 @@ abstract class Operation{
         return(this.currency.get_code());
     }
 
-    public abstract get_type():any;
-    
-}
-
-
-export class Transaction extends Operation{
-
-    private account_id:bigint;
-    private type:typeTransaction;
-
-    constructor(operation:transaction){
-        super({
-            id:operation.id,
-            code:operation.code,
-            date: operation.date,
-            amount: operation.amount,
-            currency:operation.currency
-        })
-        this.account_id = operation.account_id;
-        this.type = operation.type;
-
-    }
-
-    public get_account_id(){
-        return this.account_id;
-    }
-
-    public get_type() {
+    public get_type():any {
         return this.type;
     }
 
 
-    
-}
-
-
-export class Transfer extends Operation{
-
-   
-    private destintattion_account:bigint;
-    private remmiter_account:Account;
-    private type:typeTransfer;
-
-    constructor(operation:transfer){
-        super({
-            id:operation.id,
-            code:operation.code,
-            date: operation.date,
-            amount: operation.amount,
-            currency:operation.currency
-        })
-
-        this.destintattion_account = operation.destintattion_account;
-        this.remmiter_account = new Account(operation.remmiter_account);
-        this.type = operation.type;
-
-    }
-
-
-   public get_type() {
-       return this.type;
-   }
-
    public get_remitterAccount(){
-        return this.remmiter_account;
+        return this.remitter_account;
    }
-
-
     
 }
 
@@ -114,6 +64,6 @@ export class Transfer extends Operation{
 
 
 
-export const map_transaction =(data:any[])=>{
-    data.map((e:any)=> ((e.remmiter_account == null)? new Transfer(e): new Transaction(e)));
+export const map_transfer =(data:transferQuery[])=>{
+    data.map((el:any)=> ( new Transfer(el)));
 }

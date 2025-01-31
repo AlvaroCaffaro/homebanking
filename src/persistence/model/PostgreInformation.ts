@@ -1,9 +1,8 @@
 import { Pool } from "pg";
-import { Account, map_account } from "../../LOGIC/object/account";
+import {  map_personalAccount, PersonalAccount } from "../../LOGIC/object/account";
 import { Person } from "../../logic/object/user";
 import { IinformationUser } from "../interfaces/interfacesInformation";
-import { accountCreation, accountQuery, personQuery, userQuery } from "../type";
-import { account } from "../../logic/type";
+import { accountCreation, personalAccountQuery, personQuery } from "../type";
 import { generateAlias } from "../../utils/generateAlias";
 
 export class PostgreInformationUser implements IinformationUser{
@@ -59,7 +58,7 @@ export class PostgreInformationUser implements IinformationUser{
 
     }
     
-    async get_accounts({ id}: { id: string}): Promise<Account[] | null> {
+    async get_accounts({ id}: { id: string}): Promise<PersonalAccount[] > {
        
         let connection;
         try {
@@ -72,13 +71,13 @@ export class PostgreInformationUser implements IinformationUser{
             const result = await connection.query('SELECT * FROM banking.select_personalAccounts($1)',[id]);
             
             if(result.rowCount == 0){
-                return null;
+                return [];
             }
             
-            const data:accountQuery[] = result.rows;
+            const data:personalAccountQuery[] = result.rows;
             
-            map_account(data);
-            return (data as unknown as Account[]);
+            map_personalAccount(data);
+            return data as unknown as PersonalAccount[];
 
             
         } catch(e){

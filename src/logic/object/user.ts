@@ -5,32 +5,42 @@ export class Person {
     private person_id:string;
     private dni:string;
     private name:string;
-    private secondName:string | null;
+    private secondname:string | null;
     private lastname:string;
 
     constructor(p:personQuery){
         this.person_id = p.id;
         this.dni = p.dni;
         this.name = p.name;
-        this.secondName = p.secondname;
+        this.secondname = p.secondname;
         this.lastname = p.lastname;
         
     }
-
-        public get_name(){
-            return this.name;
+        public get_id(){
+            return this.person_id;
         }
 
         public get_dni(){
             return this.dni;
         }
 
-        public get_secondName(){
-            return this.secondName;
+        public get_name(){
+            return this.name;
+        }
+
+        public get_secondname(){
+            return this.secondname;
         }
 
         public get_lastname(){
             return this.lastname;
+        }
+
+        public get_fullname(){
+            let fullname:string = this.lastname + ', ' + this.name;
+            if(this.secondname) fullname+= ' ' + this.secondname;
+
+            return fullname;
         }
 }
 
