@@ -24,26 +24,42 @@ export class InformationUser{
     async get_accounts({ id }: { id: string; }): Promise<PersonalAccount[] | Error> {
         try{
             const result = await this.persistence.get_accounts({id});
-            if(result == null){
+            if(result.length == 0){
                 throw new Error('no posee ninguna cuenta');
             }
 
-            return result ;
+            return result;
         
         } catch(e:any){
             return e;
         }
     }
 
-    async create_account(account:accountCreation){
+    async create_account(account:accountCreation):Promise<null | Error>{
 
-        await this.persistence.create(account);
+        try {
+            await this.persistence.create(account);
+            return null;
+        } catch (e) {
+            return e as Error;
+        }
     }
 
-    async update_password({ id, new_password }: { id: string; new_password: string; }): Promise<null> {
-        throw new Error("Method not implemented.");
+    async update_password({ id, new_password }: { id: string; new_password: string; }): Promise<null | Error> {
+        try {
+            await this.persistence.update_password({id,new_password});
+            return null
+        } catch (e) {
+            return e as Error;
+        }
     }
-    async update_username({ id, new_username }: { id: string; new_username: string; }): Promise<null> {
-        throw new Error("Method not implemented.");
+
+    async update_username({ id, new_username }: { id: string; new_username: string; }): Promise<null | Error> {
+        try {
+            await this.persistence.update_username({id,new_username});
+            return null
+        } catch (e) {
+            return e as Error;
+        }
     }
 }

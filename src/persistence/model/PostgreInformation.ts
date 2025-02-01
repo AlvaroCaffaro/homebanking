@@ -4,6 +4,8 @@ import { Person } from "../../logic/object/user";
 import { IinformationUser } from "../interfaces/interfacesInformation";
 import { accountCreation, personalAccountQuery, personQuery } from "../type";
 import { generateAlias } from "../../utils/generateAlias";
+import bcrypt from 'bcryptjs';
+import { EnvCofig } from "../../env.config";
 
 export class PostgreInformationUser implements IinformationUser{
 
@@ -40,7 +42,7 @@ export class PostgreInformationUser implements IinformationUser{
 
     async get_personalInfromation({ id }: { id: string; }): Promise<Person > {
 
-        let poolConnection         ;
+        let poolConnection;
 
         try {
             poolConnection = await this.pool.connect();            
@@ -64,7 +66,7 @@ export class PostgreInformationUser implements IinformationUser{
 
     }
     
-    async get_accounts({ id}: { id: string}): Promise<PersonalAccount[] > {
+    async get_accounts({ id}: { id: string}): Promise<PersonalAccount[]> {
        
         let poolConnection;
         try {
@@ -76,6 +78,7 @@ export class PostgreInformationUser implements IinformationUser{
         try{
             const result = await poolConnection.query('SELECT * FROM banking.select_personalAccounts($1)',[id]);
             
+
             if(result.rowCount == 0){
                 return [];
             }
@@ -87,16 +90,55 @@ export class PostgreInformationUser implements IinformationUser{
             
         } catch(e){
             throw e;
+
         } finally{
             poolConnection.release();
         }
 
     }
-    update_password({ id ,new_password}: { id: string,new_password:string }): Promise<null> {
-        throw new Error("Method not implemented.");
+    async update_password({ id ,new_password}: { id: string,new_password:string }): Promise<null> {
+      
+        let poolConnection;
+        try{
+            poolConnection = await this.pool.connect();
+        } catch(e){
+ 
+        }
+        
+        let encrypt;
+        try {
+            const salt = await bcrypt.genSalt(EnvCofig.salt_round);
+            encrypt = await bcrypt.hash(new_password,salt);
+
+       } catch (e) {
+            throw e;
+       }
+
+       try {
+            const result = await poolConnection?.query('UPDATE person.holder set password = $1 WHERE id = $2',[encrypt,id]);
+            return null;
+        } catch (e) {
+            throw e;
+       }
+
+      
     }
-    update_username({ id, new_username }: { id: string,new_username:string }): Promise<null> {
-        throw new Error("Method not implemented.");
+
+    async update_username({ id, new_username }: { id: string,new_username:string }): Promise<null> {
+        
+        let poolConnection;
+        try{
+            poolConnection = await this.pool.connect();
+        } catch(e){
+            throw e;
+        }
+        
+       try {
+            const result = await poolConnection?.query('UPDATE person.holder set username = $1 WHERE id = $2',[new_username,id]);
+            return null;
+        } catch (e) {
+            throw e;
+       }
     }
     
 }

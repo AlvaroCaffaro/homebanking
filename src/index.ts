@@ -85,8 +85,6 @@ app.use('/',authRouter);
 
 app.use('/:token',(req:any,res:any,next)=>{
     const token = req.params.token;
-    req.session.user = undefined;
-
 
     if(!token){
         return res.status(403).json({
@@ -121,6 +119,24 @@ app.use('/:token',(req:any,res:any)=>{
 */
 
 app.use('/:token',userRouter);
+
+app.use('/:token/:accountToken',(req:any,res:any,next:any)=>{
+        try {
+            const { accountToken } = req.params;
+            const decode = jwt.verify(accountToken,EnvCofig.other_secret);
+            req.session.account = decode;
+            next();
+
+            
+        } catch (e) {
+            return res.status(403).json({
+                message:['cuenta no valida'],
+                error: 'failure',
+                data:null
+            });
+        }
+});
+
 
 app.use('/:token/:accountToken',accountRouter);
 app.use('/:token/:accountToken/transfer',transferRouter);

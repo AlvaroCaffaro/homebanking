@@ -7,8 +7,9 @@ export class UserController{
 
 
     static async get_personalInformation(req:any,res:any){
+        const {id} = req.session.user;
 
-        const person = await Information.get_personalInfromation(req.session.id);
+        const person = await Information.get_personalInfromation({id:id});
         
         if(person instanceof Error){
             return res.json({
@@ -34,10 +35,12 @@ export class UserController{
     }
 
     static async get_userInformation(req:any,res:any){
+
+        const {name,email} = req.session.user;
         res.json({
             data:{
-                username:req.session.name,
-                email:req.session.email
+                username:name,
+                email:email
             },
             result:'success',
             message:''
@@ -45,7 +48,9 @@ export class UserController{
     }
 
     static async get_personalAccounts(req:any,res:any){
-        const account = await Information.get_accounts(req.session.user.id);
+        
+        const {id} = req.session.user;
+        const account = await Information.get_accounts({id:id});
 
         if(account instanceof Error){
             return res.json({
@@ -58,6 +63,7 @@ export class UserController{
         let data = [];
         let c;
         let token;
+        console.log(account.length);
         for(const a of account){
 
             token = jwt.sign({ 
@@ -77,7 +83,6 @@ export class UserController{
                 }
             );
             
-
             c = a.get_currency();
             data.push({
                 'id':a.get_id(),
@@ -124,4 +129,45 @@ export class UserController{
             message: ['la cuenta ha sido solicitada. En el transcurso de los dias será aprobada.']
         });
     }
+
+    static async update_password(req:any,res:any){
+        const {id} = req.session.user;
+        const {newPassword} = req.body;
+        const result = await Information.update_password({id:id,new_password:newPassword});
+
+        if(result instanceof Error){
+            res.json({
+                data: null,
+                result: 'failure',
+                message: [result.message]
+            });
+        }
+
+        res.json({
+            data: null,
+            result: 'success',
+            message: ['la contraseña ha sido cambiada con éxito']
+        });
+    }
+
+    static async update_username(req:any,res:any){
+        const {id} = req.session.user;
+        const {newUsername} = req.body;
+        const result = await Information.update_username({id:id,new_username:newUsername});
+
+        if(result instanceof Error){
+            res.json({
+                data: null,
+                result: 'failure',
+                message: [result.message]
+            });
+        }
+
+        res.json({
+            data: null,
+            result: 'success',
+            message: ['El nombre de usuario fue cambiado correctamente']
+        });
+    }
+
 }

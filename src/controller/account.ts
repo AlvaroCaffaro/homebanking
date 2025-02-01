@@ -1,28 +1,9 @@
 import { EnvCofig } from "../env.config";
 import { accountManager } from "../logic/dependenciesAccount";
 import { Datetime } from "../utils/date";
-import jwt  from "jsonwebtoken";
 
 
 export class AccountController{
-
-    static async verify(req:any,res:any,next:any){
-        try {
-            const {accountToken} = req.query;
-            const decode = jwt.verify(accountToken,EnvCofig.other_secret);
-            
-            req.session.account = decode;
-            next();
-
-            
-        } catch (e) {
-            return res.status(403).JSON({
-                message:['cuenta no valida'],
-                error: 'failure',
-                data:null
-            });
-        }
-    }
     
     static async get_transfers(req:any,res:any){
         
@@ -68,8 +49,8 @@ export class AccountController{
 
     static async get_accountAgenda(req:any,res:any){
         
-
-        const agenda = await accountManager.getAccountAgenda({idAccount:req.session.account.id});
+        const {id} = req.session.account;
+        const agenda = await accountManager.getAccountAgenda({idAccount:id});
         
         if(agenda instanceof Error){
             return res.json({
