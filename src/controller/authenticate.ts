@@ -50,7 +50,7 @@ export class AuthenticateController{
                         }
                     );
 
-                    return (res.JSON({
+                    return (res.json({
                         'token': token
                     }));
 
@@ -72,7 +72,7 @@ export class AuthenticateController{
             });*/
 
             return res.json({
-                message:['Ha ocurrido un error al conectarse al servidor'],
+                message:[(err as Error).message] ,//['Ha ocurrido un error al conectarse al servidor'],
                 result: 'failure',
                 data:null
             });

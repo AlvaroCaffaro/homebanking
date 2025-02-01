@@ -20,8 +20,6 @@ export class Authenticate{
             return(new MaxTryError());    
         }
 
-        // HERE WILL CHANGE THE PASSWORD;
-
         let data = null;
         try{ 
             data = await this.persistence.match({username:username,password:password});
@@ -50,13 +48,5 @@ export class Authenticate{
       
     }
 
-    public async prueba (){
-        try{
-            const result =await this.persistence.prueba();
-            return result;
-        }   catch(e){
-            return e as Error;
-        }
-    }
 
 }

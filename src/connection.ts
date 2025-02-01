@@ -10,6 +10,7 @@ const poolConfig:PoolConfig = {
     host:EnvCofig.host
 }
 
+
 const poolPostreSQL:Pool = new Pool(poolConfig);
 
 poolPostreSQL.on('error',(err:any,client:any)=>{

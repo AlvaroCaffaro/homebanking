@@ -94,7 +94,16 @@ export class PostreSQLAuth implements IauthUser{
     }
     async create(data:holderCreation): Promise<null> {
        
+        let poolConnection;
+        try {
+            poolConnection = await (this.pool).connect();
+        } catch (e) {
+            throw e as Error;
+            //throw new Error('fallo la conexion a la base de datos');
+        }
 
+
+        
         let password_hash;
         try {
             const salt_round = EnvCofig.salt_round;
@@ -105,13 +114,6 @@ export class PostreSQLAuth implements IauthUser{
             throw new Error('Error al encriptar la contraseña');
         }
 
-
-        let poolConnection;
-        try {
-            poolConnection = await (this.pool).connect();
-        } catch (e) {
-            throw new Error('fallo la conexion a la base de datos');
-        }
 
         try {
             const result =  await poolConnection.query('call person.insert_holder($1,$2,$3,$4,$5,$6,$7)',[data.person.dni,data.person.name,data.person.secondname, data.person.lastname,data.email,data.username, password_hash]);

@@ -1,4 +1,5 @@
 import { IinformationUser } from "../../persistence/interfaces/interfacesInformation";
+import { accountCreation } from "../../persistence/type";
 import { Account, PersonalAccount } from "../object/account";
 import { Person } from "../object/user";
 
@@ -33,6 +34,12 @@ export class InformationUser{
             return e;
         }
     }
+
+    async create_account(account:accountCreation){
+
+        await this.persistence.create(account);
+    }
+
     async update_password({ id, new_password }: { id: string; new_password: string; }): Promise<null> {
         throw new Error("Method not implemented.");
     }

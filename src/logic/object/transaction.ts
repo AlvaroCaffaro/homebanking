@@ -65,5 +65,6 @@ export class Transfer {
 
 
 export const map_transfer =(data:transferQuery[])=>{
-    data.map((el:any)=> ( new Transfer(el)));
+    return data.map((el:any)=> ( new Transfer(el)));
+
 }

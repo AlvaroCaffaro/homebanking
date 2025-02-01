@@ -1,12 +1,14 @@
 import express,{Application,Request,Response} from 'express';
 import path from 'path';
 import {authRouter} from  './router/authenticateRouter';
-import { PoolConfig } from 'pg';
 import cookieParser from "cookie-parser";
 import jwt from 'jsonwebtoken';
 import { EnvCofig } from './env.config';
 import { userRouter } from './router/userRouter';
 import { accountRouter } from './router/accountRouter';
+import { transferRouter } from './router/transferRouter';
+import session from 'express-session';
+
 
 
 const app:Application = express();
@@ -20,6 +22,17 @@ process.loadEnvFile();
 
 
 // middlewares
+app.use(session({
+    // store: a futuro lo podriamos cambiar una mongoDb o una redis
+    secret: EnvCofig.session_secret, 
+    resave: false,      
+    saveUninitialized: true, 
+    cookie: { 
+        secure: true, 
+        httpOnly: true, 
+        domain: `http://localhost:${EnvCofig.port}/ `
+    }  
+}));
 
 app.use(express.json());  // Para solicitudes con JSON
 // este middleware procesa los datos enviados en una solicitud post. permitiendolos utilizar req.body para acceder a los datos que nos envian desde el formulario de inicio de sesion
@@ -70,21 +83,27 @@ app.use((req:any,res:Response,next:any) => {
 
 app.use('/',authRouter);
 
-app.use((req:any,res,next)=>{
+app.use('/:token',(req:any,res:any,next)=>{
     const token = req.params.token;
+    req.session.user = undefined;
+
 
     if(!token){
-        res.status(403).send('usuario no verificado');
+        return res.status(403).json({
+            message:['usuario no verificado.token no previsto'],
+            status:'failure',
+            data:null
+        });
     }
 
     try {
-        const data = jwt.verify(token,process.env.SECRET_KEY as string);
+        const data = jwt.verify(token,EnvCofig.secret_key);
         req.session.user = data;
         next();
 
     } catch (e) {
         res.status(403).json({
-            message:'usuario no verificado',
+            message:[(e as Error).message],
             status:'failure',
             data:null
         });
@@ -103,7 +122,8 @@ app.use('/:token',(req:any,res:any)=>{
 
 app.use('/:token',userRouter);
 
-app.use('/:token/:account',accountRouter);
+app.use('/:token/:accountToken',accountRouter);
+app.use('/:token/:accountToken/transfer',transferRouter);
 
 app.use('/*',(_:any,res:any)=>{
     res.send('ruta no existente');

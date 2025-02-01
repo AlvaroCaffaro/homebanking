@@ -8,45 +8,48 @@ import { generateAlias } from "../../utils/generateAlias";
 export class PostgreInformationUser implements IinformationUser{
 
     private pool:Pool;
-    constructor(connection:Pool){
-        this.pool = connection;
+    constructor(poolConnection:Pool){
+        this.pool = poolConnection;
     }
 
 
     async create(accountCreation: accountCreation): Promise<null> {
-        let connection;
+        let poolConnection;
 
         try {
-            connection = await this.pool.connect();            
+            poolConnection= await this.pool.connect();            
         
         } catch (e) {
             throw e;
         }
 
         try {
-            const result = await connection.query('insert into banking.account (owner_id,alias,currency_id) values ($1,$2,$3)',[accountCreation.holderId,generateAlias(),accountCreation.currencyId]);
+            const result = await poolConnection.query('insert into banking.account (owner_id,alias,currency_id) values ($1,$2,$3)',[accountCreation.holderId,generateAlias(),accountCreation.currencyId]);
            
             return null;
          
 
         } catch (e) {
             throw e;
+        }finally{
+            poolConnection.release();
         }
+
 
     }
 
     async get_personalInfromation({ id }: { id: string; }): Promise<Person > {
 
-        let connection;
+        let poolConnection         ;
 
         try {
-            connection = await this.pool.connect();            
+            poolConnection = await this.pool.connect();            
         } catch (e) {
             throw e;
         }
 
         try {
-            const result = await connection.query('SELECT * FROM person.person where id = $1',[id]);
+            const result = await poolConnection.query('SELECT * FROM person.person where id = $1',[id]);
            
             const data:personQuery = result.rows[0];
 
@@ -54,21 +57,24 @@ export class PostgreInformationUser implements IinformationUser{
 
         } catch (e) {
             throw e;
+        } finally{
+            poolConnection.release();
         }
+
 
     }
     
     async get_accounts({ id}: { id: string}): Promise<PersonalAccount[] > {
        
-        let connection;
+        let poolConnection;
         try {
-            connection = await this.pool.connect();            
+            poolConnection= await this.pool.connect();            
         } catch (e) {
             throw e;
         }
 
         try{
-            const result = await connection.query('SELECT * FROM banking.select_personalAccounts($1)',[id]);
+            const result = await poolConnection.query('SELECT * FROM banking.select_personalAccounts($1)',[id]);
             
             if(result.rowCount == 0){
                 return [];
@@ -76,12 +82,13 @@ export class PostgreInformationUser implements IinformationUser{
             
             const data:personalAccountQuery[] = result.rows;
             
-            map_personalAccount(data);
-            return data as unknown as PersonalAccount[];
+            return map_personalAccount(data);
 
             
         } catch(e){
             throw e;
+        } finally{
+            poolConnection.release();
         }
 
     }

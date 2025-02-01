@@ -3,13 +3,25 @@ export class Datetime {
 
     private date:Date;
 
-    constructor(date:{year:number,month:number,day:number} | null){
+    constructor(date:{year:number,month:number,day:number} | null | string){
 
         if(!date){ 
             this.date = new Date();
             this.date.setMonth(this.date.getMonth() + 1);
             return;
         } 
+
+        if(typeof date == 'string'){
+         
+            // formato yyyy-mm-dd
+            let year = Number(date.substring(0, 4));  
+            let month = Number(date.substring(5, 7));
+            let day = Number(date.substring(8, 10));
+
+            this.date = new Date(year,month,day);
+            
+            return;
+        }
 
 
         this.date = new Date(Number(date.year),Number(date.month + 1),Number(date.day));

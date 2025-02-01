@@ -1,9 +1,10 @@
 import { Pool } from "pg";
-import { Account } from "../../LOGIC/object/account";
+import { Account, map_account } from "../../LOGIC/object/account";
 import {  map_transfer, Transfer } from "../../logic/object/transaction";
 import { Iaccount } from "../interfaces/interfacesAccount";
-import { accountCreation, accountQuery, transferCreation, transferQuery } from "../type";
+import { accountCreation, accountQuery, personQuery, transferCreation, transferQuery } from "../type";
 import { Datetime } from "../../utils/date";
+import { map_person, Person } from "../../logic/object/user";
 
 export class PostreSQLAccount implements Iaccount{
 
@@ -11,6 +12,68 @@ export class PostreSQLAccount implements Iaccount{
     
     constructor(connection:any){
         this.connection = connection;
+    }
+
+    async getPersonsAgenda({ idAccount }: { idAccount: bigint; }): Promise<Person[]> {
+            let poolConnection;
+            try{
+                poolConnection = await (this.connection).connect();
+            } catch(e){
+                throw new Error('fallo la conexion a la base de datos');
+            }
+    
+    
+            try {
+               const result = await poolConnection.query('SELECT * FROM person.lastest_persons ($1)',[
+                    idAccount
+                ]);
+    
+               if(result.rowCount == 0){
+                    return [];
+               }
+    
+               const data:personQuery[] = result.rows;
+
+               return(map_person(data));
+    
+    
+            } catch (e) {
+                throw e;
+            
+            } finally{
+                poolConnection.release(); 
+            }
+    
+    }    
+
+    async getAccounts({ idPerson }: { idPerson: string; }): Promise<Account[]> {
+        let poolConnection;
+            try{
+                poolConnection = await (this.connection).connect();
+            } catch(e){
+                throw new Error('fallo la conexion a la base de datos');
+            }
+    
+    
+            try {
+               const result = await poolConnection.query('SELECT * FROM banking.select_personAccounts ($1)',[
+                    idPerson
+                ]);
+    
+               if(result.rowCount == 0){
+                    return [];
+               }
+    
+               const data:accountQuery[] = result.rows;
+
+               return(map_account(data));
+    
+    
+            } catch (e) {
+                throw e;
+            } finally{
+                poolConnection.release(); 
+            }
     }
 
     async createTransfer(tranfer: transferCreation): Promise<null> {
@@ -41,6 +104,9 @@ export class PostreSQLAccount implements Iaccount{
             
         } catch (e) {
            throw e; 
+        
+        }  finally{
+            poolConnection.release(); 
         }
 
 
@@ -65,14 +131,17 @@ export class PostreSQLAccount implements Iaccount{
                 return [];
            }
 
-           const data = result.rows;
-           map_transfer(data);
+           const data:transferQuery[] = result.rows;
+           return map_transfer(data);
 
-           return data;
+           
 
 
         } catch (e) {
             throw e;
+       
+        } finally{
+            poolConnection.release(); 
         }
 
     }
@@ -93,6 +162,7 @@ export class PostreSQLAccount implements Iaccount{
 
     async create(account: accountCreation): Promise<void> {
         let poolConnection;
+        
         try {
             poolConnection = await (this.connection).connect();
         } catch (e) {
@@ -107,10 +177,13 @@ export class PostreSQLAccount implements Iaccount{
         
         } catch (e) {
             throw new Error('error');
+        } finally{
+            poolConnection.release(); 
         }
+
     }
 
-    async get(account_id: string): Promise<Account> {
+    async get({identifier}:{identifier: string}): Promise<Account> {
         let poolConnection;
         try {
             poolConnection = await (this.connection).connect();
@@ -119,12 +192,11 @@ export class PostreSQLAccount implements Iaccount{
         }
 
         try {
-           let result = await poolConnection.query('SELECT * FROM banking.find_account WHERE id = ?',[account_id]);
+           let result = await poolConnection.query('SELECT * FROM banking.find_account($1)',[identifier]);
            
            if(result.rowCount == 0){
                 throw new Error('El alias o el numero de cuenta no existen');
            }
-
 
            const data:accountQuery = result.rows[0];
            const account = new Account(data);
@@ -135,6 +207,8 @@ export class PostreSQLAccount implements Iaccount{
 
             throw e;
 
+        }finally{
+            poolConnection.release(); 
         }
 
     }

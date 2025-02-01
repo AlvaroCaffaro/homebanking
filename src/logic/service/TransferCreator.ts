@@ -44,11 +44,11 @@ export class TransferCreator{
     }
     
 
-    async set_destination(identifier:string){
+    async set_destination({identifier}:{identifier:string}):Promise<Account | Error>{
 
         if(this.transfer == null) return new Error(this.error_message);
         try {
-           const result:Account = await this.accountPersistence.get(identifier); 
+           const result:Account = await this.accountPersistence.get({identifier}); 
            this.transfer.destination_account = {
                 account_id:result.get_id(),
                 currency_id:result.get_currency().get_id(),
@@ -58,7 +58,7 @@ export class TransferCreator{
             return(result);
         
         } catch (e) {
-            return e;
+            return new Error('error');
         }
 
     }
@@ -100,7 +100,7 @@ export class TransferCreator{
 
         try {
             await this.accountPersistence.createTransfer(this.transfer);
-            this.clear();       
+            return(this.clear());       
         } catch (e) {
             return e;
         }
@@ -109,10 +109,15 @@ export class TransferCreator{
 
 
     async clear(){
+
         if(this.transfer == null){
             return;
         }
+
+        const transfer = this.transfer;
         this.transfer = null;
+
+        return transfer;
 
     }
         

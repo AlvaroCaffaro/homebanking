@@ -1,33 +1,47 @@
-import { UUID } from "crypto";
 import { Iaccount } from "../../persistence/interfaces/interfacesAccount";
-import { Account } from "../object/account";
-import { Currency } from "../object/currency";
-import { Holder } from "../object/user";
+import { Datetime } from "../../utils/date";
+import { Transfer } from "../object/transaction";
+import { Person } from "../object/user";
+
 
 export class AccountManager{
-    private persistence:Iaccount;
+    private accountPersistence:Iaccount;
 
-    constructor(persistence:Iaccount){
-        this.persistence = persistence;
+    constructor({accountPersistence}:{accountPersistence:Iaccount}){
+        this.accountPersistence = accountPersistence;
     }
 
-    async applyForNewAccount(holder:Holder,currency:Currency){
-        try {
-
-            //await this.persistence.create();
-        } catch (e) {
-            return new Error();
+    async getAllOperations(idAccount:bigint,end:Datetime){
+        try{
+            const res = await this.accountPersistence.getAllOperations({idAccount,end});
+            return res;
+        } catch(e){
+            return e;
         }
-   
-    }
-    
-    async getAccountsAgenda(holder:Holder){
-        // da los account guardados como favoritos
     }
 
-    async findAccount(identify:string){ // this could be alias or number of account
-        // esto es facil, ya que podemos hacer un or select * from account where alias = ? | number = ?;
+    async getOperations({idAccount,from,to}:{idAccount:bigint,from:Datetime,to:Datetime}):Promise<Transfer[]|Error>{
+
+        try {
+            const res = await this.accountPersistence.getOperations({idAccount,from,to});  
+            return res;  
+        
+        } catch (e) {
+            return e as Error;
+        }    
+
     }
+
+        
+    async getAccountAgenda({idAccount}:{idAccount:bigint}):Promise<Person[] | Error>{
+        
+        try {
+            const res = await this.accountPersistence.getPersonsAgenda({idAccount});
+            return res;
+        } catch (e) {
+            return e as Error;
+        }
+     }
 
 
 

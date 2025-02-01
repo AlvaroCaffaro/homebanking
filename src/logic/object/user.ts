@@ -45,6 +45,10 @@ export class Person {
 }
 
 
+export const map_person =(data:personQuery[])=>{
+    return data.map((el:any)=> ( new Person(el)));
+
+}
 
 export class Holder extends Person{
     private readonly id:string;

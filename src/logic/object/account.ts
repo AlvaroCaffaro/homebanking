@@ -31,6 +31,10 @@ export class PersonalAccount{
         return this.number;
     }
 
+    public get_alias(){
+        return this.alias;
+    }
+
 
     public get_currency(){
         return this.currency;       
@@ -47,6 +51,7 @@ export class PersonalAccount{
 
 
 
+
 }
 
 
@@ -55,12 +60,14 @@ export class Account {
     
     private id:bigint;
     private number: string;
+    private alias:string;
     private holder:Person
     private currency:Currency;
 
     constructor(account:accountQuery) {
         this.id = account.id;
         this.number = account.number;
+        this.alias = account.alias;
 
         this.holder = new Person({
             id:account.holder_id,  // this, in fact, is the holder id, its not the person id 
@@ -99,6 +106,9 @@ export class Account {
         return this.number;
     }
 
+    public get_alias(){
+        return this.alias;
+    }
    
 
     public get_currency(){
@@ -111,6 +121,11 @@ export class Account {
 
 
 
+export const map_account = (data:accountQuery[]) =>{
+    return data.map((el:accountQuery)=> new Account(el));
+}
+
+
 export const map_personalAccount = (data:personalAccountQuery[]) =>{
-    data.map((el:personalAccountQuery)=> new PersonalAccount(el));
+    return data.map((el:personalAccountQuery)=> new PersonalAccount(el));
 }

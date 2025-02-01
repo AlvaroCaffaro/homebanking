@@ -3,8 +3,9 @@ import {UserController} from '../controller/user';
 
 export const userRouter = Router();
 
-userRouter.get('/',UserController.get_personalInformation);
+userRouter.get('/info',UserController.get_personalInformation);
 userRouter.get('/user',UserController.get_userInformation);
-userRouter.get('/account',UserController.get_personalAccounts);
+userRouter.get('/',UserController.get_personalAccounts);
+userRouter.post('/account',UserController.create_account);
 
 
