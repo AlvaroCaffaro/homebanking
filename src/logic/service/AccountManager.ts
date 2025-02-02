@@ -1,4 +1,6 @@
 import { Iaccount } from "../../persistence/interfaces/interfacesAccount";
+import { Icurrency } from "../../persistence/interfaces/interfacesCurrency";
+import { transferCreation } from "../../persistence/type";
 import { Datetime } from "../../utils/date";
 import { Transfer } from "../object/transaction";
 import { Person } from "../object/user";

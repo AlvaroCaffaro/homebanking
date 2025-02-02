@@ -96,13 +96,14 @@ export class PostgreInformationUser implements IinformationUser{
         }
 
     }
+    
     async update_password({ id ,new_password}: { id: string,new_password:string }): Promise<null> {
       
         let poolConnection;
         try{
             poolConnection = await this.pool.connect();
         } catch(e){
- 
+            throw e;
         }
         
         let encrypt;
@@ -115,10 +116,12 @@ export class PostgreInformationUser implements IinformationUser{
        }
 
        try {
-            const result = await poolConnection?.query('UPDATE person.holder set password = $1 WHERE id = $2',[encrypt,id]);
+            const result = await poolConnection.query('UPDATE person.holder set password = $1 WHERE id = $2',[encrypt,id]);
             return null;
         } catch (e) {
             throw e;
+       } finally {
+            poolConnection.release();
        }
 
       
@@ -134,10 +137,12 @@ export class PostgreInformationUser implements IinformationUser{
         }
         
        try {
-            const result = await poolConnection?.query('UPDATE person.holder set username = $1 WHERE id = $2',[new_username,id]);
+            const result = await poolConnection.query('UPDATE person.holder set username = $1 WHERE id = $2',[new_username,id]);
             return null;
         } catch (e) {
             throw e;
+       } finally{
+            poolConnection.release();
        }
     }
     
