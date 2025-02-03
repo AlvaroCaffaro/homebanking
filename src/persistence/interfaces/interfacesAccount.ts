@@ -5,7 +5,7 @@ import { Datetime } from "../../utils/date";
 import { transferCreation } from "../type";
 
 export interface Iaccount {
-    get({identifier}:{identifier:string}):Promise<Account>;  // this could be the alias or the account number
+    get({identifier}:{identifier:string}):Promise<Account | null>;  // this could be the alias or the account number
     createTransfer(tranfer:transferCreation):Promise<null>;
     getOperations({idAccount,from,to}:{idAccount:bigint,from:Datetime,to:Datetime}):Promise<Transfer[]>
     getAllOperations({idAccount,end}:{idAccount:bigint,end:Datetime}):Promise<Transfer[]>;

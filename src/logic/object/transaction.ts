@@ -46,7 +46,7 @@ export class Transfer {
     }
 
     public get_currency(){
-        return(this.currency.get_code());
+        return(this.currency);
     }
 
     public get_type():any {

@@ -16,7 +16,10 @@ export class TransferCreator{
 
     async findAccount({identifier}:{identifier:string}):Promise<Account | Error>{
         try {
-            const account =await this.accountPersistence.get({identifier:identifier});     
+            const account = await this.accountPersistence.get({identifier:identifier});   
+            if(account == null){
+                return new Error('El alias/numero de cuenta solicitado no existe')
+            }  
             return account;       
         
         } catch (e) {
@@ -24,7 +27,7 @@ export class TransferCreator{
         }
     }
 
-    async create({destination_id,destination_currencyId, destination_currencyCode,remitter_id,remitter_currencyId,remitter_currencyCode,remitter_amount}:{destination_id:bigint,destination_currencyId:bigint,destination_currencyCode:string,remitter_id:bigint,remitter_currencyId:bigint,remitter_currencyCode:string,remitter_amount:number}){
+    async create({destination_id,destination_currencyId, destination_currencyCode,remitter_id,remitter_currencyId,remitter_currencyCode,remitter_amount}:{destination_id:string,destination_currencyId:string,destination_currencyCode:string,remitter_id:string,remitter_currencyId:string,remitter_currencyCode:string,remitter_amount:number}){
 
         let destination_amount = 0;
 
@@ -34,26 +37,29 @@ export class TransferCreator{
                 targetCurrency:destination_currencyCode
             });
 
-            destination_amount = rate * remitter_amount;
+            destination_amount = rate * Number(remitter_amount);
 
         } catch (e) {
             return e;
         }
 
 
+        console.log('remmiter:' , remitter_amount);
+        console.log('destination: ', destination_amount);
+
         try {
             const result = await this.accountPersistence.createTransfer({
                 destination_account: {
-                    account_id: destination_id,
-                    currency_id: destination_currencyId,
+                    account_id: (destination_id),
+                    currency_id: (destination_currencyId),
                     currency_code: destination_currencyCode
                 },
                 remitter_account: {
-                    account_id: remitter_id,
-                    currency_id: remitter_currencyId,
+                    account_id: (remitter_id),
+                    currency_id: (remitter_currencyId),
                     currency_code: remitter_currencyCode
                 },
-                remitter_amount: remitter_amount,
+                remitter_amount: Number(remitter_amount),
                 destination_amount: destination_amount
             });
        

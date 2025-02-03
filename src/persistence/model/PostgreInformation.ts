@@ -6,6 +6,7 @@ import { accountCreation, personalAccountQuery, personQuery } from "../type";
 import { generateAlias } from "../../utils/generateAlias";
 import bcrypt from 'bcryptjs';
 import { EnvCofig } from "../../env.config";
+import { ConnectionError, DatabaseError } from "../../logic/object/error";
 
 export class PostgreInformationUser implements IinformationUser{
 
@@ -22,7 +23,7 @@ export class PostgreInformationUser implements IinformationUser{
             poolConnection= await this.pool.connect();            
         
         } catch (e) {
-            throw e;
+            throw new ConnectionError();
         }
 
         try {
@@ -47,7 +48,7 @@ export class PostgreInformationUser implements IinformationUser{
         try {
             poolConnection = await this.pool.connect();            
         } catch (e) {
-            throw e;
+            throw new ConnectionError();
         }
 
         try {
@@ -58,7 +59,7 @@ export class PostgreInformationUser implements IinformationUser{
             return new Person(data);
 
         } catch (e) {
-            throw e;
+            throw new DatabaseError();
         } finally{
             poolConnection.release();
         }
@@ -66,13 +67,13 @@ export class PostgreInformationUser implements IinformationUser{
 
     }
     
-    async get_accounts({ id}: { id: string}): Promise<PersonalAccount[]> {
+    async get_accounts({id}: { id: string}): Promise<PersonalAccount[]> {
        
         let poolConnection;
         try {
             poolConnection= await this.pool.connect();            
         } catch (e) {
-            throw e;
+            throw new ConnectionError();
         }
 
         try{
@@ -89,7 +90,7 @@ export class PostgreInformationUser implements IinformationUser{
 
             
         } catch(e){
-            throw e;
+            throw new DatabaseError();
 
         } finally{
             poolConnection.release();
@@ -103,7 +104,7 @@ export class PostgreInformationUser implements IinformationUser{
         try{
             poolConnection = await this.pool.connect();
         } catch(e){
-            throw e;
+            throw new ConnectionError();
         }
         
         let encrypt;
@@ -119,7 +120,7 @@ export class PostgreInformationUser implements IinformationUser{
             const result = await poolConnection.query('UPDATE person.holder set password = $1 WHERE id = $2',[encrypt,id]);
             return null;
         } catch (e) {
-            throw e;
+            throw new DatabaseError();
        } finally {
             poolConnection.release();
        }
@@ -133,14 +134,14 @@ export class PostgreInformationUser implements IinformationUser{
         try{
             poolConnection = await this.pool.connect();
         } catch(e){
-            throw e;
+            throw new ConnectionError();
         }
         
        try {
             const result = await poolConnection.query('UPDATE person.holder set username = $1 WHERE id = $2',[new_username,id]);
             return null;
         } catch (e) {
-            throw e;
+            throw new DatabaseError();
        } finally{
             poolConnection.release();
        }

@@ -1,8 +1,9 @@
+import { EnvCofig } from '../../env.config';
 import {Icurrency} from '../interfaces/interfacesCurrency';
 
 export class CurrencyDB implements Icurrency{ 
 
-    private apiKey = process.env.API_EXCHANGE_KEY; 
+    private apiKey = EnvCofig.exchange_key;
 
     public async getQuoteInLocalCurrency({baseCurrency,targetCurrency}:{baseCurrency:string,targetCurrency:string}){ 
         const url = `https://v6.exchangerate-api.com/v6/${this.apiKey}/latest/${baseCurrency}`;

@@ -5,6 +5,7 @@ import { Iaccount } from "../interfaces/interfacesAccount";
 import { accountCreation, accountQuery, personQuery, transferCreation, transferQuery } from "../type";
 import { Datetime } from "../../utils/date";
 import { map_person, Person } from "../../logic/object/user";
+import { ConnectionError, DatabaseError, NotEnoughBalanceError } from "../../logic/object/error";
 
 export class PostreSQLAccount implements Iaccount{
 
@@ -19,7 +20,7 @@ export class PostreSQLAccount implements Iaccount{
             try{
                 poolConnection = await (this.connection).connect();
             } catch(e){
-                throw new Error('fallo la conexion a la base de datos');
+                throw new ConnectionError();
             }
     
     
@@ -38,7 +39,7 @@ export class PostreSQLAccount implements Iaccount{
     
     
             } catch (e) {
-                throw e;
+                throw new DatabaseError();
             
             } finally{
                 poolConnection.release(); 
@@ -51,7 +52,7 @@ export class PostreSQLAccount implements Iaccount{
             try{
                 poolConnection = await (this.connection).connect();
             } catch(e){
-                throw new Error('fallo la conexion a la base de datos');
+                throw new ConnectionError();
             }
     
     
@@ -70,40 +71,59 @@ export class PostreSQLAccount implements Iaccount{
     
     
             } catch (e) {
-                throw e;
+
+                throw new DatabaseError();
+
             } finally{
                 poolConnection.release(); 
             }
     }
 
-    async createTransfer(tranfer: transferCreation): Promise<null> {
+    async createTransfer(transfer: transferCreation): Promise<null> {
      
         let poolConnection;
         try{
             poolConnection = await (this.connection).connect();
         } catch(e){
-            throw new Error('fallo la conexion a la base de datos');
+            throw new ConnectionError();
         }
 
-        if(!tranfer.destination_account) throw new Error('La cuenta de destino no ha sido seleccionada');
+        try {
+            const data = await poolConnection.query('SELECT * FROM banking.verify_balance($1,$2)',[transfer.remitter_account.account_id,transfer.remitter_amount]);
+            const isEnough = ((data.rows[0]).verify_balance) as boolean;
+            
+            if(!isEnough){
+                throw new NotEnoughBalanceError();
+            }
+            
+        } catch (e) {
+            
+            if(e instanceof NotEnoughBalanceError){
+                throw e;
+            } 
+            
+            throw new DatabaseError();
+            
+        }
+
 
         try {
-            const result = await poolConnection.query('CALL banking.insert_transfer($1,$2,$3,$4,$5,$6)',[
-                tranfer.destination_account.account_id,
-                tranfer.destination_account.currency_id,
-                tranfer.destination_amount,
 
-                tranfer.remitter_account.account_id,
-                tranfer.remitter_account.currency_id,
-                tranfer.remitter_account
+            const _ = await poolConnection.query('CALL banking.insert_transfer($1,$2,$3,$4,$5,$6)',[
+                Number(transfer.destination_account.account_id),
+                Number(transfer.destination_account.currency_id),
+                transfer.destination_amount,
+                Number(transfer.remitter_account.account_id),
+                Number(transfer.remitter_account.currency_id),
+                transfer.remitter_amount
             ]);
-            
 
             return null;
 
             
         } catch (e) {
-           throw e; 
+         
+            throw new DatabaseError();
         
         }  finally{
             poolConnection.release(); 
@@ -117,7 +137,7 @@ export class PostreSQLAccount implements Iaccount{
         try{
             poolConnection = await (this.connection).connect();
         } catch(e){
-            throw new Error('fallo la conexion a la base de datos');
+            throw new ConnectionError();
         }
 
 
@@ -138,7 +158,7 @@ export class PostreSQLAccount implements Iaccount{
 
 
         } catch (e) {
-            throw e;
+            throw new DatabaseError();
        
         } finally{
             poolConnection.release(); 
@@ -154,7 +174,7 @@ export class PostreSQLAccount implements Iaccount{
             }));
 
         } catch(e){
-            throw e;
+            throw new DatabaseError();
         }
 
     }
@@ -166,36 +186,45 @@ export class PostreSQLAccount implements Iaccount{
         try {
             poolConnection = await (this.connection).connect();
         } catch (e) {
-            throw new Error('fallo la conexion a la base de datos');
+            throw new ConnectionError();
         }
 
-        try {
-            await poolConnection.query('INSERT INTO banking.account (currency_id,owner_id) VALUES (?,?)',[
-                account.currencyId,
-                account.holderId
-            ]);
+        let count = 0;
+        const max = 2;
+        while(count < max){  // I do this in case the alias generator fails
+            try {
+                await poolConnection.query('INSERT INTO banking.account (currency_id,owner_id) VALUES (?,?)',[
+                    account.currencyId,
+                    account.holderId
+                ]);
         
-        } catch (e) {
-            throw new Error('error');
-        } finally{
-            poolConnection.release(); 
-        }
+            } catch (e) {
+                count++;
+         
 
+                if(count >= max ){ 
+                    poolConnection.release(); 
+                    throw new DatabaseError();
+                }
+            } 
+        }   
+
+        poolConnection.release(); 
     }
-
-    async get({identifier}:{identifier: string}): Promise<Account> {
+    
+    async get({identifier}:{identifier: string}): Promise<Account | null> {
         let poolConnection;
         try {
             poolConnection = await (this.connection).connect();
         } catch (e) {
-            throw new Error('fallo la conexion a la base de datos');
+            throw new ConnectionError();
         }
 
         try {
            let result = await poolConnection.query('SELECT * FROM banking.find_account($1)',[identifier]);
            
            if(result.rowCount == 0){
-                throw new Error('El alias o el numero de cuenta no existen');
+                return null;
            }
 
            const data:accountQuery = result.rows[0];
@@ -205,7 +234,7 @@ export class PostreSQLAccount implements Iaccount{
 
         } catch (e) {
 
-            throw e;
+            throw new DatabaseError();
 
         }finally{
             poolConnection.release(); 

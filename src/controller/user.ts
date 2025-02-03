@@ -136,7 +136,7 @@ export class UserController{
         const result = await Information.update_password({id:id,new_password:newPassword});
 
         if(result instanceof Error){
-            res.json({
+            return res.json({
                 data: null,
                 result: 'failure',
                 message: [result.message]
@@ -153,10 +153,11 @@ export class UserController{
     static async update_username(req:any,res:any){
         const {id} = req.session.user;
         const {newUsername} = req.body;
+
         const result = await Information.update_username({id:id,new_username:newUsername});
 
         if(result instanceof Error){
-            res.json({
+            return res.json({
                 data: null,
                 result: 'failure',
                 message: [result.message]

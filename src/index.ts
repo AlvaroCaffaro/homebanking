@@ -141,9 +141,9 @@ app.use('/:token/:accountToken',(req:any,res:any,next:any)=>{
 app.use('/:token/:accountToken',accountRouter);
 app.use('/:token/:accountToken/transfer',transferRouter);
 
-app.use('/*',(_:any,res:any)=>{
+/*app.use('/*',(_:any,res:any)=>{
     res.send('ruta no existente');
-});
+});*/
 
 
 const PORT = (Number(process.env.PORT));

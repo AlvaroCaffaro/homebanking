@@ -1,6 +1,6 @@
 import { IinformationUser } from "../../persistence/interfaces/interfacesInformation";
 import { accountCreation } from "../../persistence/type";
-import { Account, PersonalAccount } from "../object/account";
+import { PersonalAccount } from "../object/account";
 import { Person } from "../object/user";
 
 export class InformationUser{
@@ -56,7 +56,7 @@ export class InformationUser{
 
     async update_username({ id, new_username }: { id: string; new_username: string; }): Promise<null | Error> {
         try {
-            await this.persistence.update_username({id,new_username});
+            await this.persistence.update_username({id:id,new_username:new_username});
             return null
         } catch (e) {
             return e as Error;

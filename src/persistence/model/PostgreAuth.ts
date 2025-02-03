@@ -4,6 +4,7 @@ import { IauthUser } from "../interfaces/interfacesAuth";
 import { holderCreation, userQuery } from "../type";
 import bcrypt from 'bcryptjs';
 import { EnvCofig } from "../../env.config";
+import { DatabaseError,ConnectionError, RepeatedValueError } from "../../logic/object/error";
 
 export class PostreSQLAuth implements IauthUser{
     private pool:Pool;
@@ -17,8 +18,7 @@ export class PostreSQLAuth implements IauthUser{
         try {
             poolConnection = await (this.pool).connect();
         } catch (e) {
-            throw e;
-            //throw new Error('fallo la conexion a la base de datos');
+            throw new ConnectionError();
         }
 
 
@@ -35,7 +35,7 @@ export class PostreSQLAuth implements IauthUser{
 
         } catch(e){
 
-            throw e;
+            throw new DatabaseError();
         
         } finally{
             poolConnection.release();
@@ -51,8 +51,7 @@ export class PostreSQLAuth implements IauthUser{
         try {
             poolConnection = await (this.pool).connect();
         } catch (e) {
-            throw e;
-            //throw new Error('fallo la conexion a la base de datos');
+            throw new ConnectionError();
         }
     
         try {
@@ -84,8 +83,8 @@ export class PostreSQLAuth implements IauthUser{
                 }});
 
         } catch (e) {
-            throw e;
-            //throw new Error('ha ocurrido un error en la base de datos, intente mas tarde.');
+            throw new DatabaseError();
+
         } finally{
             poolConnection.release(); // Libera el cliente de vuelta al pool
         }
@@ -98,8 +97,7 @@ export class PostreSQLAuth implements IauthUser{
         try {
             poolConnection = await (this.pool).connect();
         } catch (e) {
-            throw e as Error;
-            //throw new Error('fallo la conexion a la base de datos');
+            throw new ConnectionError();
         }
 
 
@@ -120,8 +118,11 @@ export class PostreSQLAuth implements IauthUser{
             return null;
 
         } catch (e) {
-            throw e;
-            //throw new Error('ha ocurrido un error en la base de datos, intente mas tarde.');
+
+            if((e as any).code == '23505'){ // violacion de unicidad
+                throw new RepeatedValueError((e as any).message);
+            }
+            throw new DatabaseError();
         
         } finally{
             poolConnection.release();

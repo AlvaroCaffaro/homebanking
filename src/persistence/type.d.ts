@@ -3,9 +3,9 @@ import { Datetime } from "../utils/date";
 
 
 export type accountShortData = {
-    account_id:bigint | null,
-    currency_id:bigint | null,
-    currency_code:string | null,
+    account_id:string ,
+    currency_id:string ,
+    currency_code:string ,
 };
 
 export type transferCreation = {
