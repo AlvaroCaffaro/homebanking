@@ -5,7 +5,7 @@ import { Iaccount } from "../interfaces/interfacesAccount";
 import { accountCreation, accountQuery, personQuery, transferCreation, transferQuery } from "../type";
 import { Datetime } from "../../utils/date";
 import { map_person, Person } from "../../logic/object/user";
-import { ConnectionError, DatabaseError, NotEnoughBalanceError } from "../../logic/object/error";
+import { ConnectionError, DatabaseError, NotEnoughBalanceError, RepeatedValueError } from "../../logic/object/error";
 
 export class PostreSQLAccount implements Iaccount{
 
@@ -15,7 +15,7 @@ export class PostreSQLAccount implements Iaccount{
         this.connection = connection;
     }
 
-    async getPersonsAgenda({ idAccount }: { idAccount: bigint; }): Promise<Person[]> {
+    async getPersonsAgenda({ idAccount }: { idAccount: string; }): Promise<Person[]> {
             let poolConnection;
             try{
                 poolConnection = await (this.connection).connect();
@@ -47,7 +47,7 @@ export class PostreSQLAccount implements Iaccount{
     
     }    
 
-    async getAccounts({ idPerson }: { idPerson: string; }): Promise<Account[]> {
+    async getPersonAccounts({ idPerson }: { idPerson: string; }): Promise<Account[]> {
         let poolConnection;
             try{
                 poolConnection = await (this.connection).connect();
@@ -132,7 +132,7 @@ export class PostreSQLAccount implements Iaccount{
 
     }
    
-    async getOperations({idAccount,from,to}:{idAccount: bigint, from: Datetime, to: Datetime}): Promise<Transfer[]> {
+    async getOperations({idAccount,from,to}:{idAccount: string, from: Datetime, to: Datetime}): Promise<Transfer[]> {
         let poolConnection;
         try{
             poolConnection = await (this.connection).connect();
@@ -165,20 +165,58 @@ export class PostreSQLAccount implements Iaccount{
         }
 
     }
-    async getAllOperations({idAccount,end}:{idAccount: bigint,end:Datetime}): Promise<Transfer[]> {
-        try{
-            return(await this.getOperations({
-                idAccount:idAccount,
-                from:end.oneMonthAgo(),
-                to:end
-            }));
 
-        } catch(e){
-            throw new DatabaseError();
+    async getLastOperations({ idAccount }: { idAccount: string; }): Promise<Transfer[]> {
+        let poolConnection;
+        try {
+            poolConnection = await this.connection.connect();
+        } catch (e) {
+            throw new ConnectionError();
         }
 
-    }
+        try {
+            const result =  await poolConnection.query('SELECT * FROM banking.select_lastTransfers($1)',[idAccount]);
 
+            if(result.rowCount == 0){
+                return [];
+            }
+
+            const data:transferQuery[] = result.rows; 
+            return map_transfer(data);
+        
+        } catch (e) {
+            throw new DatabaseError();   
+        
+        } finally{
+            poolConnection.release();
+        }
+    }
+    
+    async updateAlias({ idAccount, newAlias }: { idAccount: string; newAlias: string; }): Promise<null> {
+        let poolConnection;
+        try {
+            poolConnection = await this.connection.connect();
+        } catch (e) {
+            throw new ConnectionError();
+        }
+
+        try {
+            await poolConnection.query('UPDATE banking.account set alias = $1 WHERE id = $2',[newAlias,idAccount]);
+        
+            return null;
+
+        } catch (e) {
+            
+            if((e as any).code == '23505'){ // violacion de unicidad
+                throw new RepeatedValueError('El alias introducido ya esta en uso.');      
+            }
+            
+            throw new DatabaseError();
+        
+        } finally{
+            poolConnection.release();
+        }
+    }
 
     async create(account: accountCreation): Promise<void> {
         let poolConnection;
@@ -190,18 +228,19 @@ export class PostreSQLAccount implements Iaccount{
         }
 
         let count = 0;
-        const max = 2;
-        while(count < max){  // I do this in case the alias generator fails
+        const max = 3;
+        while(count < max){  // I do this in case the alias generator generate a used alias
             try {
                 await poolConnection.query('INSERT INTO banking.account (currency_id,owner_id) VALUES (?,?)',[
                     account.currencyId,
                     account.holderId
                 ]);
+
+                count = max;
         
             } catch (e) {
                 count++;
          
-
                 if(count >= max ){ 
                     poolConnection.release(); 
                     throw new DatabaseError();

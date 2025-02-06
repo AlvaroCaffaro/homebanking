@@ -1,43 +1,26 @@
 export class TransferValidation {
     static isValidAmount({value}:{value:any}){
-        if(typeof value  == 'string'){
-            value = Number(value);
-            if(Number.isNaN(value)){
-                return false;
-            }
-
-            if(value > 0){
-                return true;
-            }
-            return false;
+        
+        value = Number(value);
+        if(Number.isNaN(value)){
+            return 'El valor debe ser de tipo numerico';
         }
 
-        return false;
+        if(value < 0){
+            return 'El valor debe ser positivo';
+        }
+
+        return null;
+            
     }
 
     static isValidAlias({value}:{value:string}){
-        if(typeof value  != 'string'){
-            return false;
+ 
+        if(value.length < 6){
+            return 'El alias debe contener al menos 6 caracteres';
         }
-
-        let pos = value.indexOf('.');;
-        let count = 0;
-        while(pos != -1){
-
-            count++;
-
-            if(count == 3){
-                return true;
-            }
-
-
-            pos = value.indexOf('.',pos + 1);
-        }
-      
-
-        return false;
         
-
+        return null;
     }    
 
 }

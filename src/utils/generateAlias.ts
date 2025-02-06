@@ -60,7 +60,7 @@ const palabras = [
   export const generateAlias = () =>{
     
     let aliasArr = [];
-    let word_count = Math.ceil(Math.random()*4) + 3;
+    let word_count = Math.ceil(Math.random()*2) + 3;
     
     for(let i = 0; i < word_count; i++){
         let idx:number = Math.round(Math.random()*(palabras.length - 1));

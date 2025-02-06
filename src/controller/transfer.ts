@@ -2,7 +2,83 @@ import { transferCreator } from "../logic/dependenciesAccount";
 import { Account } from "../LOGIC/object/account";
 
 export class TransferController{
- 
+
+    static async get_PersonsAgenda(req:any,res:any){
+        
+        const {id} = req.session.account;
+        const agenda = await transferCreator.getPersonsAgenda({idAccount:id});
+        
+        if(agenda instanceof Error){
+            return res.json({
+                status:'failure',
+                message:[agenda.message],
+                data: null
+            });
+        }
+
+        let data = [];
+
+        for (const el of agenda){
+            data.push({
+                id: el.get_id(),
+                dni:el.get_dni(),
+                fullname:el.get_fullname()
+            });
+        }
+
+        return res.json({
+                status:'success',
+                message:[],
+                data: data
+        });
+    }
+
+
+    static async get_personAccounts(req:any,res:any){
+        const {idPerson} = req.body;
+
+        const result = await transferCreator.getPersonAccount({idPerson:idPerson});
+        if(result instanceof Error){
+            return res.json({
+                status:'failure',
+                message:[result.message],
+                data:null
+            });
+        }
+
+
+     
+        
+        let data = [];
+        let c;
+        for(const el of result){
+            c = el.get_currency();
+            data.push({
+                id:el.get_id(),
+                number:el.get_number(),
+                alias:el.get_alias(),
+                holder:{ 
+                    id:el.get_holder_id(),
+                    dni:el.get_dni(),
+                    fullname:el.get_holder_fullname(),
+                   
+                },
+                currency:{
+                    id: c.get_id(),
+                    code:c.get_code(),
+                    name:c.get_name()
+                },
+            });
+        }
+
+
+        return res.json({
+            data:data,
+            status:'success',
+            message:[]
+        });
+
+    }
         
 
     static async find_account(req:any,res:any){

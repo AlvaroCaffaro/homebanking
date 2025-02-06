@@ -13,16 +13,30 @@ export class AccountManager{
         this.accountPersistence = accountPersistence;
     }
 
-    async getAllOperations(idAccount:bigint,end:Datetime){
-        try{
-            const res = await this.accountPersistence.getAllOperations({idAccount,end});
-            return res;
-        } catch(e){
-            return e;
-        }
+
+    async updateAlias({idAccount,newAlias}:{idAccount:string,newAlias:string}){
+
+        try {
+            await this.accountPersistence.updateAlias({idAccount:idAccount,newAlias:newAlias});  
+        
+        } catch (e) {
+            return e as Error;
+        }    
+
     }
 
-    async getOperations({idAccount,from,to}:{idAccount:bigint,from:Datetime,to:Datetime}):Promise<Transfer[]|Error>{
+    async getLastOperations(idAccount:string,end:Datetime){
+     
+        try {
+            const result = await this.accountPersistence.getLastOperations({idAccount:idAccount});  
+            
+        } catch (e) {
+            return e as Error;
+        }  
+    }
+
+
+    async getOperations({idAccount,from,to}:{idAccount:string,from:Datetime,to:Datetime}):Promise<Transfer[]|Error>{
 
         try {
             const res = await this.accountPersistence.getOperations({idAccount,from,to});  
@@ -33,17 +47,6 @@ export class AccountManager{
         }    
 
     }
-
-        
-    async getAccountAgenda({idAccount}:{idAccount:bigint}):Promise<Person[] | Error>{
-        
-        try {
-            const res = await this.accountPersistence.getPersonsAgenda({idAccount});
-            return res;
-        } catch (e) {
-            return e as Error;
-        }
-     }
 
 
 

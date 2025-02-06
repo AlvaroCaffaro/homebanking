@@ -2,6 +2,7 @@ import { Iaccount } from "../../persistence/interfaces/interfacesAccount";
 import { Icurrency } from "../../persistence/interfaces/interfacesCurrency";
 import { transferCreation } from "../../persistence/type";
 import { Account } from "../object/account";
+import { Person } from "../object/user";
 
 
 export class TransferCreator{
@@ -13,6 +14,28 @@ export class TransferCreator{
        this.accountPersistence = accountPersistence;
        this.currencyPersistence = currencyPersistence;
     }
+
+            
+    async getPersonsAgenda({idAccount}:{idAccount:string}):Promise<Person[] | Error>{
+        
+        try {
+            const res = await this.accountPersistence.getPersonsAgenda({idAccount});
+            return res;
+        } catch (e) {
+            return e as Error;
+        }
+     }
+
+     async getPersonAccount({idPerson}:{idPerson:string}):Promise<Account[] | Error>{
+        try {
+            const res:Account[] = await this.accountPersistence.getPersonAccounts({idPerson});
+            return res;
+            
+        } catch (e) {
+            return e as Error;
+        }
+     }
+
 
     async findAccount({identifier}:{identifier:string}):Promise<Account | Error>{
         try {
@@ -43,9 +66,6 @@ export class TransferCreator{
             return e;
         }
 
-
-        console.log('remmiter:' , remitter_amount);
-        console.log('destination: ', destination_amount);
 
         try {
             const result = await this.accountPersistence.createTransfer({

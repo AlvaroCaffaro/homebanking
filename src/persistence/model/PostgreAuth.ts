@@ -13,37 +13,6 @@ export class PostreSQLAuth implements IauthUser{
         this.pool = connection;
     }
     
-    async prueba(): Promise<any> {
-        let poolConnection;
-        try {
-            poolConnection = await (this.pool).connect();
-        } catch (e) {
-            throw new ConnectionError();
-        }
-
-
-        try {
-            const result =  await poolConnection.query('SELECT * FROM person.person'); 
-            
-            //console.log('res: ', result);
-            if(result.rowCount == 0){
-                return null;
-            }
-        
-            return result.rows;
-
-
-        } catch(e){
-
-            throw new DatabaseError();
-        
-        } finally{
-            poolConnection.release();
-
-        }
-
-
-}
 
     async match({ username, password }: { username: string; password: string; }): Promise<Holder | null > {
         
@@ -112,15 +81,40 @@ export class PostreSQLAuth implements IauthUser{
             throw new Error('Error al encriptar la contraseña');
         }
 
+        try {
+            const result =  await poolConnection.query('SELECT name FROM person.person where dni = $1',[
+                data.person.dni,
+            ]);
+
+            if(result.rowCount != 0){
+                throw new RepeatedValueError('La persona introducida ya esta registrada');
+            }
+
+        } catch (e) {
+            if(e instanceof RepeatedValueError){
+                throw e;
+            }
+
+            throw new DatabaseError();
+        }
+
 
         try {
-            const result =  await poolConnection.query('call person.insert_holder($1,$2,$3,$4,$5,$6,$7)',[data.person.dni,data.person.name,data.person.secondname, data.person.lastname,data.email,data.username, password_hash]);
+            const result =  await poolConnection.query('call person.insert_holder($1,$2,$3,$4,$5,$6,$7)',[
+                data.person.dni,
+                data.person.name,
+                data.person.secondname,
+                data.person.lastname,
+                data.email,
+                data.username, 
+                password_hash
+            ]);
             return null;
 
         } catch (e) {
 
             if((e as any).code == '23505'){ // violacion de unicidad
-                throw new RepeatedValueError((e as any).message);
+                throw new RepeatedValueError('El nombre de usuario introducido ya esta en uso. Utilice otro');
             }
             throw new DatabaseError();
         

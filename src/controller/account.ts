@@ -1,6 +1,7 @@
 import { EnvCofig } from "../env.config";
 import { accountManager } from "../logic/dependenciesAccount";
 import { Datetime } from "../utils/date";
+import { TransferValidation } from "../validation/transferValidation";
 
 
 export class AccountController{
@@ -10,7 +11,6 @@ export class AccountController{
         const {account} = req.session;
         const {from,to} = req.body;
 
-        console.log(from);
         const fromDate = new Datetime(from);
         const toDate = new Datetime(to);
 
@@ -47,48 +47,22 @@ export class AccountController{
 
     }
 
-    static async get_accountAgenda(req:any,res:any){
-        
+    static async update_alias(req:any,res:any){
         const {id} = req.session.account;
-        const agenda = await accountManager.getAccountAgenda({idAccount:id});
-        
-        if(agenda instanceof Error){
+        const {newAlias} = req.body;
+
+
+        const message = TransferValidation.isValidAlias({value:newAlias});
+        if(message != null){
             return res.json({
+                message:[message],
                 status:'failure',
-                message:[agenda.message],
-                data: null
+                data:null
             });
         }
 
-        let data = [];
-
-        for (const el of agenda){
-            data.push({
-                id: el.get_id(),
-                dni:el.get_dni(),
-                fullname:el.get_fullname()
-            });
-        }
-
-        return res.json({
-                status:'success',
-                message:'',
-                data: data
-        });
+        const result = await accountManager.updateAlias({idAccount:id,newAlias:newAlias});
     }
-
-
-    static async get_agenda(req:any,res:any){
-        try{
-//            const agenda = await accountManager.getAccountsAgenda();
-
-        } catch(e){
-            return e;
-        }
-    }
-
-
-
 
     
 

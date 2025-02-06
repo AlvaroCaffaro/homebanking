@@ -7,8 +7,9 @@ import { transferCreation } from "../type";
 export interface Iaccount {
     get({identifier}:{identifier:string}):Promise<Account | null>;  // this could be the alias or the account number
     createTransfer(tranfer:transferCreation):Promise<null>;
-    getOperations({idAccount,from,to}:{idAccount:bigint,from:Datetime,to:Datetime}):Promise<Transfer[]>
-    getAllOperations({idAccount,end}:{idAccount:bigint,end:Datetime}):Promise<Transfer[]>;
-    getPersonsAgenda({idAccount}:{idAccount:bigint}):Promise<Person[]>;
-    getAccounts({idPerson}:{idPerson:string}):Promise<Account[]>;
+    getOperations({idAccount,from,to}:{idAccount:string,from:Datetime,to:Datetime}):Promise<Transfer[]>
+    getLastOperations({idAccount}:{idAccount:string}):Promise<Transfer[]>;
+    getPersonsAgenda({idAccount}:{idAccount:string}):Promise<Person[]>;
+    getPersonAccounts({idPerson}:{idPerson:string}):Promise<Account[]>;  
+    updateAlias({idAccount,newAlias}:{idAccount:string,newAlias:string}):Promise<null>;  
 }
