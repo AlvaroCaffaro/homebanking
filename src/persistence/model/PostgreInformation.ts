@@ -1,5 +1,5 @@
 import { Pool } from "pg";
-import {  map_personalAccount, PersonalAccount } from "../../LOGIC/object/account";
+import { map_personalAccount, PersonalAccount } from "../../LOGIC/object/account";
 import { Person } from "../../logic/object/user";
 import { IinformationUser } from "../interfaces/interfacesInformation";
 import { accountCreation, personalAccountQuery, personQuery } from "../type";
@@ -33,7 +33,8 @@ export class PostgreInformationUser implements IinformationUser{
 
         } catch (e) {
             throw new DatabaseError();
-        }finally{
+        
+        } finally{
             poolConnection.release();
         }
     }
@@ -57,14 +58,15 @@ export class PostgreInformationUser implements IinformationUser{
 
         } catch (e) {
             throw new DatabaseError();
-        }finally{
+        
+        } finally{
             poolConnection.release();
         }
 
 
     }
 
-    async get_personalInfromation({ id }: { id: string; }): Promise<Person > {
+    async get_personalInfromation({ id }: { id: string }): Promise<Person > {
 
         let poolConnection;
 
@@ -75,10 +77,9 @@ export class PostgreInformationUser implements IinformationUser{
         }
 
         try {
-            const result = await poolConnection.query('SELECT * FROM person.person where id = $1',[id]);
+            const result = await poolConnection.query('SELECT * FROM person.get_personalInfo($1)',[id]);
            
             const data:personQuery = result.rows[0];
-
             return new Person(data);
 
         } catch (e) {
@@ -144,9 +145,10 @@ export class PostgreInformationUser implements IinformationUser{
             return null;
         } catch (e) {
             throw new DatabaseError();
-       } finally {
+        
+        } finally {
             poolConnection.release();
-       }
+        }
 
       
     }

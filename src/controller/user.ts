@@ -2,6 +2,7 @@
 import { EnvCofig } from "../env.config";
 import { Information } from "../logic/dependenciesUser";
 import jwt from 'jsonwebtoken';
+import { FormValidator } from "../validation/formValidation";
 
 export class UserController{
 
@@ -16,7 +17,7 @@ export class UserController{
                 message:person.message,
                 result: 'failure',
                 data:null
-            })
+            });
         }
 
 
@@ -25,7 +26,7 @@ export class UserController{
                 "dni": person.get_dni(),
                 "name": person.get_name(),
                 "secondname":person.get_secondname(),
-                "lastname": person.get_secondname()  
+                "lastname": person.get_lastname()  
             },
             result:'success',
             message: ''
@@ -63,10 +64,10 @@ export class UserController{
         let data = [];
         let c;
         let token;
-        console.log(account.length);
         for(const a of account){
 
-            token = jwt.sign({ 
+            if(a.get_state() == 'accepted'){ 
+                token = jwt.sign({ 
                     id:a.get_id(),
                     number:a.get_number(),
                     alias:a.get_alias(),
@@ -79,9 +80,11 @@ export class UserController{
                 },
                     EnvCofig.other_secret,
                     {
-                    expiresIn:60*60*60*24*10 // 10 days
+                    expiresIn:60*60*60*2 // 2 hours
                 }
-            );
+                );
+            } else { token = 'the account it not accepted,'}
+
             
             c = a.get_currency();
             data.push({
@@ -133,6 +136,15 @@ export class UserController{
     static async update_password(req:any,res:any){
         const {id} = req.session.user;
         const {newPassword} = req.body;
+
+        const message = FormValidator.isValidPassword({value:newPassword});
+        if(!message){
+            return(res.json({
+                status:'failure',
+                message:[message],
+                data:null
+            }));
+        }
         const result = await Information.update_password({id:id,new_password:newPassword});
 
         if(result instanceof Error){
@@ -153,6 +165,15 @@ export class UserController{
     static async update_username(req:any,res:any){
         const {id} = req.session.user;
         const {newUsername} = req.body;
+
+        const message = FormValidator.isValidName({value:newUsername});
+        if(!message){
+            return(res.json({
+                status:'failure',
+                message:[message],
+                data:null
+            }));
+        }
 
         const result = await Information.update_username({id:id,new_username:newUsername});
 
