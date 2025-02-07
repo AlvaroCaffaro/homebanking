@@ -6,13 +6,36 @@ import { accountCreation, personalAccountQuery, personQuery } from "../type";
 import { generateAlias } from "../../utils/generateAlias";
 import bcrypt from 'bcryptjs';
 import { EnvCofig } from "../../env.config";
-import { ConnectionError, DatabaseError } from "../../logic/object/error";
+import { ConnectionError, DatabaseError, RepeatedValueError } from "../../logic/object/error";
+import { Currency, map_currency } from "../../LOGIC/object/currency";
 
 export class PostgreInformationUser implements IinformationUser{
 
     private pool:Pool;
     constructor(poolConnection:Pool){
         this.pool = poolConnection;
+    }
+
+    async get_allCurrencies(): Promise<Currency[]> {
+        let poolConnection;
+
+        try {
+            poolConnection= await this.pool.connect();            
+        
+        } catch (e) {
+            throw new ConnectionError();
+        }
+
+        try {
+            const result = await poolConnection.query('SELECT * FROM banking.currency');
+           
+            return (map_currency(result.rows));
+
+        } catch (e) {
+            throw new DatabaseError();
+        }finally{
+            poolConnection.release();
+        }
     }
 
 
@@ -33,7 +56,7 @@ export class PostgreInformationUser implements IinformationUser{
          
 
         } catch (e) {
-            throw e;
+            throw new DatabaseError();
         }finally{
             poolConnection.release();
         }
@@ -141,8 +164,14 @@ export class PostgreInformationUser implements IinformationUser{
             const result = await poolConnection.query('UPDATE person.holder set username = $1 WHERE id = $2',[new_username,id]);
             return null;
         } catch (e) {
+
+            if((e as any).code == '23505'){ // violacion de unicidad
+                throw new RepeatedValueError('El nombre de usuario introducido ya esta en uso, utilice otro.');      
+            }
+
             throw new DatabaseError();
-       } finally{
+       
+        } finally{
             poolConnection.release();
        }
     }

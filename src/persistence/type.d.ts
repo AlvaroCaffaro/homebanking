@@ -87,11 +87,12 @@ export type transferQuery ={
     id:bigint,
     code:string,
     date_t:Datetime,
-    destination_account:bigint,
-    remitter_account:bigint,
+    other_person_fullname:string,
+    other_person_dni:string,
+    other_account_number:string,
     currency_id:bigint,
     currency_code:string,
     currency_name:string,
     amount:number,
-    type_t:string
+    type_t:string,
 }
