@@ -27,5 +27,5 @@ export class Currency{
 }
 
 export const map_currency =(data:any[])=>{
-    data.map((e:currency)=> new Currency(e));
+    return data.map((e:currency)=> new Currency(e));
 }
