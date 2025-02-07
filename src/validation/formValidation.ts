@@ -2,44 +2,44 @@ export class FormValidator{
  
     static isValidPassword({value}:{value:string}){ 
         if(typeof value !== 'string'){
-            return false;
+            return 'La contraseña debe ser una cadena de texto';
         }
 
-        if(value.length < 6 || value.length > 90){
-            return false;
+        if(value.length < 6 || value.length > 60){
+            return 'La contraseña debe contener al menos 6 caracteres y como maximo 60';
         }
 
-        return true;
+        return null;
     }
 
     static isValidEmail({value}:{value:string}){
 
         if(typeof value !== 'string'){
-            return false;
+            return 'El email introducido no es valido.';
         }
 
         if(!value.includes("@") || !value.includes(".")){
-            return false;
+            return 'El email introducido no es valido.';
         }
 
         if(value.length < 7 || value.length >= 256){
-            return false;
+            return 'El email introducido no es valido.';
         }
 
-        return true;
+        return null;
 
     }
 
     static isValidName({value}:{value:string}){
         if(typeof value !== 'string'){
-            return false;
+            return 'El nombre debe ser una cadena';
         }
         
-        if(value.length < 6 || value.length > 60){
-            return false;
+        if(value.length < 3 || value.length > 60){
+            return 'El nombre debe contener al menos 3 caracteres y como maximo 60';
         }
 
-        return true;
+        return null;
     }
 
     

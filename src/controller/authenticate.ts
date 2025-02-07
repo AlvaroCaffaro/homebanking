@@ -16,13 +16,13 @@ export class AuthenticateController{
         const {username, password} = req.body;
 
         let error:string[] = [];
-        if(!FormValidator.isValidName({value: username})){
-            error.push("el nombre de usuario escrito no es valido.");
-        }
+        let message;
 
-        if(!FormValidator.isValidPassword({value: password})){
-            error.push('la contraseña escrita no es valida');
-        }
+        message = FormValidator.isValidName({value: username});
+        if(message != null){ error.push(message);}
+
+        message = FormValidator.isValidPassword({value: password});
+        if(message != null){ error.push(message);}
 
         if(error.length > 0){
             return res.send({'error': error});
@@ -54,65 +54,37 @@ export class AuthenticateController{
                         'token': token
                     }));
 
-                    /*return (res.cookie(
-                                'access_token',
-                                token,
-                                {
-                                    httpOnly:true,
-                                    secure:false,
-                                }
-                            
-                    ).redirect('/'));
-                    */
         
         } catch (err) {
-            /*return res.render('login',{
-                error: ['Ha ocurrido un error al conectarse al servidor'],
-                created:false,
-            });*/
-
+        
             return res.json({
                 message:[(err as Error).message] ,//['Ha ocurrido un error al conectarse al servidor'],
                 result: 'failure',
                 data:null
             });
-            //return res.send({'error': ['Ha ocurrido un error al conectarse al servidor']})
         }
     };
 
-    static register(req:any,res:any){
-       /* res.render('register.ejs',{
-            error:[],
-        });*/
-
-        res.json({ 
-            welcome: 'welcome register'
-        });
-
-    }
 
     static async create(req:any,res:any){
         const {email,username,password,dni,name,secondname,lastname} = req.body;
         
         let error:string[] = [];
-        if(!FormValidator.isValidEmail({value:email})){
-            error.push("El email debe contener minimo 7 caracteres y '@' ");
-        }
+        let message;
+        message = FormValidator.isValidEmail({value:email});
+        if(message != null){ error.push(message);}
 
-        if(!FormValidator.isValidPassword({value:password})){
-            error.push('la contraseña debe tener por lo menos 5 caracteres');
-        }
+        message= FormValidator.isValidPassword({value:password});
+        if(message != null){ error.push(message);}
 
-        if(!FormValidator.isValidName({value:name})){
-            error.push('el nombre debe contener como minimo 5 caracteres');
-        }
+        message= FormValidator.isValidName({value:name});
+        if(message != null){ error.push(message);}
+
+        message= FormValidator.isValidName({value:lastname});
+        if(message != null){ error.push(message);}
 
 
         if(error.length > 0){
-           //return res.render('register',{
-              //  error: error
-            //});
-
             return res.json({
                 message:error,
                 result: 'failure',
@@ -125,17 +97,13 @@ export class AuthenticateController{
         }});
         
         if(result instanceof Error){
-            //return res.send({'error':result.message});
-
+        
             return res.json({
                 message:[result.message],
                 result: 'failure',
                 data:null
             });
 
-           // return res.render('register',{
-            //    error: [result.message]
-            //});
         }
 
         return res.json({
@@ -165,9 +133,6 @@ export class AuthenticateController{
        */
     }
 
-    static logout(_:any,res:any){
-        res.clearCookie('access_token').redirect('/login');
-    }
 
 
 }

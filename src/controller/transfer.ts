@@ -1,5 +1,7 @@
 import { transferCreator } from "../logic/dependenciesAccount";
 import { Account } from "../LOGIC/object/account";
+import { AccountValidation } from "../validation/accountValidation";
+import { TransferValidation } from "../validation/transferValidation";
 
 export class TransferController{
 
@@ -47,8 +49,6 @@ export class TransferController{
         }
 
 
-     
-        
         let data = [];
         let c;
         for(const el of result){
@@ -128,6 +128,15 @@ export class TransferController{
         const {id,currency} = req.session.account;
         const {destinationId,destinationCurrencyId,destinationCurrencyCode,amount} = req.body;
 
+        const message = TransferValidation.isValidAmount({value:amount});
+        if(message != null){
+            return(res.json({
+                status:'failure',
+                message:[message],
+                data:null
+            }));
+        }
+        
         const result = await transferCreator.create({
             destination_id:(destinationId),
             destination_currencyId:(destinationCurrencyId),

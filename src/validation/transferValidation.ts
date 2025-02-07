@@ -13,14 +13,6 @@ export class TransferValidation {
         return null;
             
     }
-
-    static isValidAlias({value}:{value:string}){
- 
-        if(value.length < 6){
-            return 'El alias debe contener al menos 6 caracteres';
-        }
-        
-        return null;
-    }    
+   
 
 }

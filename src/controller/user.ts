@@ -20,7 +20,7 @@ export class UserController{
         }
 
 
-        res.json({
+        return res.json({
             data: {
                 "dni": person.get_dni(),
                 "name": person.get_name(),
@@ -37,7 +37,7 @@ export class UserController{
     static async get_userInformation(req:any,res:any){
 
         const {name,email} = req.session.user;
-        res.json({
+        return res.json({
             data:{
                 username:name,
                 email:email
@@ -98,7 +98,7 @@ export class UserController{
             });
         }
 
-        res.json({
+        return res.json({
             data: data,
             result: 'success',
             message: []
@@ -116,14 +116,14 @@ export class UserController{
         });
 
         if(result instanceof Error){
-            res.json({
+            return res.json({
                 data: null,
                 result: 'failure',
                 message: [result.message]
             });
         }
 
-        res.json({
+        return res.json({
             data: null,
             result: 'success',
             message: ['la cuenta ha sido solicitada. En el transcurso de los dias será aprobada.']
@@ -143,7 +143,7 @@ export class UserController{
             });
         }
 
-        res.json({
+        return res.json({
             data: null,
             result: 'success',
             message: ['la contraseña ha sido cambiada con éxito']
@@ -164,7 +164,7 @@ export class UserController{
             });
         }
 
-        res.json({
+        return res.json({
             data: null,
             result: 'success',
             message: ['El nombre de usuario fue cambiado correctamente']
