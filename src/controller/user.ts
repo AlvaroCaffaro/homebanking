@@ -108,6 +108,34 @@ export class UserController{
         
     }
 
+    static async get_currencies(req:any,res:any){
+
+        const result = await Information.get_currencies();
+
+        if(result instanceof Error){
+            return res.json({
+                data: null,
+                result: 'failure',
+                message: [result.message]
+            });
+        }
+
+        let data = [];
+        for(const c of result){
+            data.push({
+                id: c.get_id(),
+                name:c.get_name(),
+                code:c.get_code()
+            });
+        }
+
+        return res.json({
+            data: data,
+            result: 'success',
+            message: []
+        });
+    } 
+
     static async create_account(req:any,res:any){
         const {id} = req.session.user;
         const {currencyId} = req.body; 

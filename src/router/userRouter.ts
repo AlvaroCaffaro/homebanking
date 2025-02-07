@@ -6,6 +6,7 @@ export const userRouter = Router();
 userRouter.get('/info',UserController.get_personalInformation);
 userRouter.get('/user',UserController.get_userInformation); 
 userRouter.get('/',UserController.get_personalAccounts);  
+userRouter.get('/currencies',UserController.get_currencies);
 userRouter.post('/account',UserController.create_account); 
 userRouter.patch('/updatePassword',UserController.update_password);
 userRouter.patch('/updateUsername',UserController.update_username);

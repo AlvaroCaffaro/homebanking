@@ -1,6 +1,7 @@
 import { IinformationUser } from "../../persistence/interfaces/interfacesInformation";
 import { accountCreation } from "../../persistence/type";
 import { PersonalAccount } from "../object/account";
+import { Currency } from "../object/currency";
 import { Person } from "../object/user";
 
 export class InformationUser{
@@ -34,6 +35,16 @@ export class InformationUser{
             return e;
         }
     }
+
+    async get_currencies():Promise<Currency[] | Error>{
+        try {
+            const result = await this.persistence.get_allCurrencies();
+            return result;
+        } catch (e) {
+            return e as Error;
+        }
+    }
+
 
     async create_account(account:accountCreation):Promise<null | Error>{
 
