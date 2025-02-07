@@ -1,8 +1,8 @@
 export class FormValidator{
  
     static isValidPassword({value}:{value:string}){ 
-        if(typeof value !== 'string'){
-            return 'La contraseña debe ser una cadena de texto';
+        if(!value){
+            return 'Debe introducir una contraseña';
         }
 
         if(value.length < 6 || value.length > 60){
@@ -14,8 +14,8 @@ export class FormValidator{
 
     static isValidEmail({value}:{value:string}){
 
-        if(typeof value !== 'string'){
-            return 'El email introducido no es valido.';
+        if(!value){
+            return 'Debe introducir un mail';
         }
 
         if(!value.includes("@") || !value.includes(".")){
@@ -31,8 +31,8 @@ export class FormValidator{
     }
 
     static isValidName({value}:{value:string}){
-        if(typeof value !== 'string'){
-            return 'El nombre debe ser una cadena';
+        if(!value){
+            return 'Debe introducir el nombre';
         }
         
         if(value.length < 3 || value.length > 60){
