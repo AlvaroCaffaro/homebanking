@@ -69,9 +69,9 @@ export class AccountController{
     }
 
     static async get_info(req:any,res:any){
-        const {id} = req.session.account;
+        const {id,number,alias,currency} = req.session.account;
 
-        const result:PersonalAccount | Error = await accountManager.getInfo({idAccount:id});
+        const result = await accountManager.getBalance({idAccount:id});
 
         if(result instanceof Error){
             return res.json({
@@ -81,24 +81,17 @@ export class AccountController{
             });
         }
 
-        const c = result.get_currency();
         return res.json({
             status:'success',
             message:'',
             data:{
-
-                id: result.get_id(),
-                number:result.get_number(),
-                alias:result.get_alias(),
-                currency:{
-                    id:c.get_id(),
-                    name:c.get_name(),
-                    code:c.get_code()
-                },
-                balance:result.get_balance(),
-                state:result.get_state()
+                number:number,
+                alias:alias,
+                currency:currency,
+                balance:result.balance,
             }
         });
+        
     }
 
 

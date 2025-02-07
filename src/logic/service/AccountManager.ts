@@ -14,9 +14,9 @@ export class AccountManager{
     }
 
 
-    async getInfo({idAccount}:{idAccount:string}){
+    async getBalance({idAccount}:{idAccount:string}){
         try {
-            const result = await this.accountPersistence.getInfo({idAccount:idAccount});  
+            const result = await this.accountPersistence.getBalance({idAccount:idAccount});  
             return result;
             
         } catch (e) {

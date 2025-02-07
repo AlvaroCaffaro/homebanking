@@ -11,6 +11,6 @@ export interface Iaccount {
     getLastOperations({idAccount}:{idAccount:string}):Promise<Transfer[]>;
     getPersonsAgenda({idAccount}:{idAccount:string}):Promise<Person[]>;
     getPersonAccounts({idPerson}:{idPerson:string}):Promise<Account[]>;  
-    getInfo({idAccount}:{idAccount:string}):Promise<PersonalAccount>;
+    getBalance({idAccount}:{idAccount:string}):Promise<any>;
     updateAlias({idAccount,newAlias}:{idAccount:string,newAlias:string}):Promise<null>;  
 }

@@ -14,7 +14,7 @@ export class PostreSQLAccount implements Iaccount{
     constructor(connection:any){
         this.connection = connection;
     }
-    async getInfo({ idAccount }: { idAccount: string; }): Promise<PersonalAccount> {
+    async getBalance({ idAccount }: { idAccount: string }) {
 
         let poolConnection;
             try{
@@ -23,16 +23,12 @@ export class PostreSQLAccount implements Iaccount{
                 throw new ConnectionError();
             }
     
-    
             try {
-               const result = await poolConnection.query('SELECT * FROM  banking.select_personalAccount($1)',[
-                    idAccount
-                ]);
+               const result = await poolConnection.query('SELECT balance from banking.account where id = $1',[idAccount])
 
-               const data:personalAccountQuery = result.rows[0];
+                const data = result.rows[0];
 
-               return((new PersonalAccount(data)));
-    
+                return data;
     
             } catch (e) {
                 throw new DatabaseError();
