@@ -1,8 +1,8 @@
 import { Pool } from "pg";
-import { Account, map_account } from "../../LOGIC/object/account";
+import { Account, map_account, PersonalAccount } from "../../LOGIC/object/account";
 import {  map_transfer, Transfer } from "../../logic/object/transaction";
 import { Iaccount } from "../interfaces/interfacesAccount";
-import { accountCreation, accountQuery, personQuery, transferCreation, transferQuery } from "../type";
+import { accountCreation, accountQuery, personalAccountQuery, personQuery, transferCreation, transferQuery } from "../type";
 import { Datetime } from "../../utils/date";
 import { map_person, Person } from "../../logic/object/user";
 import { ConnectionError, DatabaseError, NotEnoughBalanceError, RepeatedValueError } from "../../logic/object/error";
@@ -13,6 +13,34 @@ export class PostreSQLAccount implements Iaccount{
     
     constructor(connection:any){
         this.connection = connection;
+    }
+    async getInfo({ idAccount }: { idAccount: string; }): Promise<PersonalAccount> {
+
+        let poolConnection;
+            try{
+                poolConnection = await (this.connection).connect();
+            } catch(e){
+                throw new ConnectionError();
+            }
+    
+    
+            try {
+               const result = await poolConnection.query('SELECT * FROM  banking.select_personalAccount($1)',[
+                    idAccount
+                ]);
+
+               const data:personalAccountQuery = result.rows[0];
+
+               return((new PersonalAccount(data)));
+    
+    
+            } catch (e) {
+                throw new DatabaseError();
+            
+            } finally{
+                poolConnection.release(); 
+            }
+
     }
 
     async getPersonsAgenda({ idAccount }: { idAccount: string; }): Promise<Person[]> {

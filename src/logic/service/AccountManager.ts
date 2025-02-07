@@ -14,6 +14,16 @@ export class AccountManager{
     }
 
 
+    async getInfo({idAccount}:{idAccount:string}){
+        try {
+            const result = await this.accountPersistence.getInfo({idAccount:idAccount});  
+            return result;
+            
+        } catch (e) {
+            return e as Error;
+        }  
+    }
+
     async updateAlias({idAccount,newAlias}:{idAccount:string,newAlias:string}){
 
         try {

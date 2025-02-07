@@ -1,5 +1,6 @@
 import { EnvCofig } from "../env.config";
 import { accountManager } from "../logic/dependenciesAccount";
+import { PersonalAccount } from "../LOGIC/object/account";
 import { Datetime } from "../utils/date";
 import { AccountValidation } from "../validation/accountValidation";
 import { TransferValidation } from "../validation/transferValidation";
@@ -66,6 +67,40 @@ export class AccountController{
         )
 
     }
+
+    static async get_info(req:any,res:any){
+        const {id} = req.session.account;
+
+        const result:PersonalAccount | Error = await accountManager.getInfo({idAccount:id});
+
+        if(result instanceof Error){
+            return res.json({
+                status: 'failure',
+                message:[result.message],
+                data:null
+            });
+        }
+
+        const c = result.get_currency();
+        return res.json({
+            status:'success',
+            message:'',
+            data:{
+
+                id: result.get_id(),
+                number:result.get_number(),
+                alias:result.get_alias(),
+                currency:{
+                    id:c.get_id(),
+                    name:c.get_name(),
+                    code:c.get_code()
+                },
+                balance:result.get_balance(),
+                state:result.get_state()
+            }
+        });
+    }
+
 
     static async update_alias(req:any,res:any){
         const {id} = req.session.account;
