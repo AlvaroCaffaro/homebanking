@@ -35,11 +35,11 @@ export class AccountManager{
 
     }
 
-    async getLastOperations(idAccount:string,end:Datetime){
+    async getLastOperations({idAccount}:{idAccount:string}){
      
         try {
             const result = await this.accountPersistence.getLastOperations({idAccount:idAccount});  
-            
+            return result;
         } catch (e) {
             return e as Error;
         }  

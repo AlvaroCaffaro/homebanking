@@ -68,7 +68,6 @@ export class UserController{
 
             if(a.get_state() == 'accepted'){ 
                 token = jwt.sign({ 
-                    id:a.get_id(),
                     number:a.get_number(),
                     alias:a.get_alias(),
                     currency:{

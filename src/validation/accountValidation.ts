@@ -1,7 +1,7 @@
 export class AccountValidation{
     static isValidDate({value}:{value:any}){
 
-        if(!value){
+        if(value == undefined){
             return 'Debe introducir la fecha';
         }
 

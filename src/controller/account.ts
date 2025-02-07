@@ -1,9 +1,8 @@
-import { EnvCofig } from "../env.config";
+import jwt from "jsonwebtoken";
 import { accountManager } from "../logic/dependenciesAccount";
-import { PersonalAccount } from "../LOGIC/object/account";
 import { Datetime } from "../utils/date";
 import { AccountValidation } from "../validation/accountValidation";
-import { TransferValidation } from "../validation/transferValidation";
+import { EnvCofig } from "../env.config";
 
 
 export class AccountController{
@@ -13,7 +12,17 @@ export class AccountController{
         const {account} = req.session;
         const {from,to} = req.body;
 
-        let message = AccountValidation.isValidDate(from);
+        console.log('from: ',from, 'to: ',to)
+        //let message = AccountValidation.isValidDate(from);
+        /*if(message != null){
+            return res.json({
+                status:'failure',
+                message: [message],
+                data:null
+            });
+        }*/
+
+        /*message = AccountValidation.isValidDate(to);
         if(message != null){
             return res.json({
                 status:'failure',
@@ -22,15 +31,7 @@ export class AccountController{
             });
         }
 
-        message = AccountValidation.isValidDate(to);
-        if(message != null){
-            return res.json({
-                status:'failure',
-                message: [message],
-                data:null
-            });
-        }
-
+        */
         const fromDate = new Datetime(from);
         const toDate = new Datetime(to);
 
@@ -62,9 +63,42 @@ export class AccountController{
             status:'success',
             message:'',
             data:data
+        });
 
+    }
+
+    static async get_lastTransfers(req:any,res:any){
+        const {id} = req.session.account;
+
+        const result = await accountManager.getLastOperations({idAccount:id});
+        
+        if(result instanceof Error){
+            return res.json({
+                status:'failure',
+                message:[result.message],
+                data: null
+            });
         }
-        )
+
+        let data = [];
+        for(const el of result){
+            data.push({
+                id:el.get_id(),
+                code:el.get_code(),
+                date:el.get_date().toLocalFullString(),
+                other_person:el.get_otherPerson(),
+                other_AccountNumber:el.get_otherAccountNumber(),
+                amount:el.get_amount(),
+                currency_code:el.get_currency(),
+                type:el.get_type()
+            });
+        }
+
+        res.json({
+            status:'success',
+            message:'',
+            data:data
+        });
 
     }
 
@@ -99,7 +133,6 @@ export class AccountController{
         const {id} = req.session.account;
         const {newAlias} = req.body;
 
-
         const message = AccountValidation.isValidAlias({value:newAlias});
        
         if(message != null){
@@ -120,10 +153,22 @@ export class AccountController{
             });
         }
 
+        const {number,currency} = req.session.account;
+
+        const token = jwt.sign({
+            id:id,
+            number:number,
+            alias:newAlias,
+            currency:currency
+        }, EnvCofig.other_secret,{
+            expiresIn:60*60*60*2
+        });
+
         return res.json({
             status:'success',
             message:'se ha actualizado correctamente el alias.',
-            data:null
+            data:null,
+            token:token
         });
     }
 

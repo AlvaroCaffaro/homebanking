@@ -165,10 +165,12 @@ export class PostreSQLAccount implements Iaccount{
         }
 
 
+
         try {
            const result = await poolConnection.query('SELECT * FROM banking.select_transfers ($1,$2,$3)',[
-                idAccount,from.toString(),
-                to.toString()
+                idAccount,
+                from,
+                to
             ]);
 
            if(result.rowCount == 0){
