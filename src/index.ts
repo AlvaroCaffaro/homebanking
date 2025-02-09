@@ -10,11 +10,8 @@ import { transferRouter } from './router/transferRouter';
 import session from 'express-session';
 
 
-
 const app:Application = express();
-//configuramos el motor de plantillas y la carpeta donde van a estar las vistas
-app.set('view engine', 'ejs');
-app.set('views', path.join(__dirname, 'view'));
+
 
 // esto permite que javaScript asigne todas las variables del archivo .env en process.env
 process.loadEnvFile();
@@ -43,42 +40,6 @@ app.use(cookieParser());
 
 // configuramos los archivos estaticos en la carpeta public (aqui estaran los archivos css) 
 app.use(express.static(path.join(__dirname, 'public')));
-
-/*
-app.use((req:any,res:Response,next:any)=>{
-    if(!req.cookie.lenguage){
-        req.cookie.lenguage = 'spanish';
-    }
-    next();
-});
-
-*/
-
-
-/*
-app.use((req:any,res:Response,next:any) => {
-    
-    req.session = {user:null};
-    const token = req.cookies.access_token;
-
-    if(!token){
-        return next();
-    }
-
-    try{
-        // verificamos si el token que se encontraba en la cookie es valido. En caso que no lo sea lanzaria un error sino iniciamos la sesion
-        const data = jwt.verify(token,process.env.SECRET_KEY as string);
-        req.session.user = data;
-        next();
-
-    } catch(e){
-        next();
-    }
-
-
-});
-*/
-
 
 
 app.use('/',authRouter);
