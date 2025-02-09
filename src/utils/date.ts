@@ -24,6 +24,13 @@ export class Datetime extends Date {
         return(!this.older(date));
     }
 
+    public equal(date:Datetime | Date){
+        if(date.getFullYear() != this.getFullYear()) return false;
+        if(date.getMonth() != this.getMonth()) return false;
+        if(date.getDate() != this.getDate()) return false;
+
+        return true;
+    }
 
     toLocalFullString(){
         return this.toLocaleString("es-AR", { timeZone: "America/Argentina/Buenos_Aires" });
