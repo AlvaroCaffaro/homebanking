@@ -12,17 +12,10 @@ export class AccountController{
         const {account} = req.session;
         const {from,to} = req.body;
 
-        console.log('from: ',from, 'to: ',to)
-        //let message = AccountValidation.isValidDate(from);
-        /*if(message != null){
-            return res.json({
-                status:'failure',
-                message: [message],
-                data:null
-            });
-        }*/
+        const fromDate = new Datetime(from);
+        const toDate = new Datetime(to);
 
-        /*message = AccountValidation.isValidDate(to);
+        let message = AccountValidation.isValidDate({value:fromDate});
         if(message != null){
             return res.json({
                 status:'failure',
@@ -31,10 +24,23 @@ export class AccountController{
             });
         }
 
-        */
-        const fromDate = new Datetime(from);
-        const toDate = new Datetime(to);
+        message = AccountValidation.isValidDate({value:toDate});
+        if(message != null){
+            return res.json({
+                status:'failure',
+                message: [message],
+                data:null
+            });
+        }
 
+        if(!fromDate.older(toDate)){
+            return res.json({
+                status:'failure',
+                message:['Rango incorrecto. La fecha de inicio debe ser mas antigua que la fecha de fin'],
+                data:null
+            });
+        }
+    
         const result = await accountManager.getOperations({idAccount:account.id,from:fromDate,to:toDate});
 
         if(result instanceof Error){

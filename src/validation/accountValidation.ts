@@ -1,30 +1,18 @@
+import { Datetime } from "../utils/date";
+
 export class AccountValidation{
     static isValidDate({value}:{value:any}){
 
-        if(value == undefined){
-            return 'Debe introducir la fecha';
-        }
+        if(!(value instanceof Datetime)) return 'La fecha introducida no es valida';
 
-        if(value instanceof Date){
-            if(isNaN(value.getDay())) return 'La fecha introducida no es valida';
-            
-            return null;
-        }
-
-        if(!(value instanceof String)){
-            return 'La fecha introducida no es valida';
-        }
-
-        let year = Number(value.substring(0, 4));  
-        let month = Number(value.substring(5, 7));
-        let day = Number(value.substring(8, 10));
+        if(isNaN(value.getDay())) return 'La fecha introducida no es valida';            
         
-        if(Number.isNaN(year) || Number.isNaN(month) || Number.isNaN(day)){
-            return 'La fecha no es valida';
+        const today = new Datetime();
+        if(!value.older(today)){
+            return 'Fecha fuera de rango. La fecha debe ser igual a mas antigua que hoy'
         }
 
         return null;
-
     }
 
     
