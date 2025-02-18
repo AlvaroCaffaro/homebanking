@@ -4,7 +4,6 @@ export class AccountValidation{
     static isValidDate({value}:{value:any}){
 
         if(!(value instanceof Datetime)) return 'La fecha introducida no es valida';
-
         if(isNaN(value.getDay())) return 'La fecha introducida no es valida';            
         
         const today = new Datetime();
