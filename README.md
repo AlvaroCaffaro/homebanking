@@ -7,7 +7,7 @@ Esta API permite la autenticación de usuarios, la creación de cuentas en difer
 - ✅ Registro e inicio de sesión de usuarios.  
 - ✅ Creación de cuentas en distintas monedas.  
 - ✅ Consulta de información personal y cuentas asociadas.  
-- ✅ Realización de transferencias entre cuentas.  
+- ✅ Realización de transferencias entre cuentas con conversión automática de divisas.  
 - ✅ Búsqueda de cuentas por alias o número de cuenta.  
 - ✅ Actualización de datos del usuario como alias, nombre de usuario y contraseña.  
 
