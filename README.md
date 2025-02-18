@@ -51,5 +51,5 @@ Esta API permite la autenticación de usuarios, la creación de cuentas en difer
    cd <NOMBRE_DEL_PROYECTO>
 
 
-   
-![diagrama fisico](https://github.com/user-attachments/assets/2af781da-8ece-4a7f-b5c8-910648ef9072)
+![diagrama fisico](https://github.com/user-attachments/assets/803c213c-2175-46a9-9b8e-de6e54eddbae)
+
