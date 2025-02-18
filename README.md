@@ -49,3 +49,7 @@ Esta API permite la autenticación de usuarios, la creación de cuentas en difer
    ```sh
    git clone <URL_DEL_REPOSITORIO>
    cd <NOMBRE_DEL_PROYECTO>
+
+
+   
+![diagrama fisico](https://github.com/user-attachments/assets/2af781da-8ece-4a7f-b5c8-910648ef9072)
