@@ -71,14 +71,6 @@ app.use('/:token',(req:any,res:any,next)=>{
 });
 
 
-//protected routes (only registered users)
-/*
-app.use('/:token',(req:any,res:any)=>{
-    const {user} = req.session;
-    res.send({user:user});
-});
-*/
-
 app.use('/:token',userRouter);
 
 app.use('/:token/:accountToken',(req:any,res:any,next:any)=>{
