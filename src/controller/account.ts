@@ -134,7 +134,6 @@ export class AccountController{
         
     }
 
-
     static async update_alias(req:any,res:any){
         const {id} = req.session.account;
         const {newAlias} = req.body;
