@@ -69,6 +69,7 @@ app.use('/:token',(req:any,res:any,next)=>{
 
 });
 
+
 app.use('/:token',userRouter);
 
 app.use('/:token/:accountToken',(req:any,res:any,next:any)=>{
