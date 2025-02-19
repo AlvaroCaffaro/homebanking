@@ -17,7 +17,6 @@ const app:Application = express();
 process.loadEnvFile();
 
 
-
 // middlewares
 app.use(session({
     // store: a futuro lo podriamos cambiar una mongoDb o una redis
@@ -69,15 +68,6 @@ app.use('/:token',(req:any,res:any,next)=>{
     }
 
 });
-
-
-//protected routes (only registered users)
-/*
-app.use('/:token',(req:any,res:any)=>{
-    const {user} = req.session;
-    res.send({user:user});
-});
-*/
 
 app.use('/:token',userRouter);
 
