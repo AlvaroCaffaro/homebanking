@@ -48,9 +48,13 @@ Esta API permite la autenticación de usuarios, la creación de cuentas en difer
 ## Modelo fisico de la base de datos
 
 **`Submodel PERSON`** 
+
+
 ![subModel_person](https://github.com/user-attachments/assets/02acda59-0543-4dc7-ab83-ffec40da84d9)
 
 **`Submodel BANKING`** 
+
+
 ![subModel_banking](https://github.com/user-attachments/assets/d352b097-c1bd-4bc8-a91c-4ae4b4ab4e61)
 
 
