@@ -17,26 +17,26 @@ Esta API permite la autenticación de usuarios, la creación de cuentas en difer
 - **`POST /login`** → Inicia sesión con credenciales válidas.  
 - **`POST /register`** → Registra un nuevo usuario.  
 
-### 💳 Cuentas y Transferencias (`accountRouter`)  
-- **`POST /transfers`** → Obtiene el historial de transferencias.  
-- **`GET /lastTransfers`** → Obtiene las últimas transferencias realizadas.  
-- **`PATCH /updateAlias`** → Actualiza el alias de una cuenta.  
-- **`GET /`** → Obtiene información de la cuenta.  
-
 ### 👤 Usuarios (`userRouter`)  
-- **`GET /info`** → Obtiene información personal del usuario.  
-- **`GET /user`** → Obtiene información detallada del usuario.  
-- **`GET /`** → Obtiene las cuentas personales del usuario.  
-- **`GET /currencies`** → Obtiene las monedas disponibles.  
-- **`POST /account`** → Crea una nueva cuenta en una moneda específica.  
-- **`PATCH /updatePassword`** → Actualiza la contraseña del usuario.  
-- **`PATCH /updateUsername`** → Actualiza el nombre de usuario.  
+- **`GET /:UserToken/info`** → Obtiene información personal del usuario.  
+- **`GET /:UserToken/user`** → Obtiene información detallada del usuario.  
+- **`GET /:UserToken/`** → Obtiene las cuentas personales del usuario.  
+- **`GET /:UserToken/currencies`** → Obtiene las monedas disponibles.  
+- **`POST /:UserToken/account`** → Crea una nueva cuenta en una moneda específica.  
+- **`PATCH /:UserToken/updatePassword`** → Actualiza la contraseña del usuario.  
+- **`PATCH /:UserToken/updateUsername`** → Actualiza el nombre de usuario.  
+
+### 💳 Cuentas y Transferencias (`accountRouter`)  
+- **`POST /:UserToken/:accountToken/transfers`** → Obtiene el historial de transferencias.  
+- **`GET /:UserToken/:accountToken/lastTransfers`** → Obtiene las últimas transferencias realizadas.  
+- **`PATCH /:UserToken/:accountToken/updateAlias`** → Actualiza el alias de una cuenta.  
+- **`GET /:UserToken/:accountToken/`** → Obtiene información de la cuenta.  
 
 ### 💸 Transferencias (`transferRouter`)  
-- **`GET /agenda`** → Obtiene la agenda de contactos para transferencias.  
-- **`POST /person`** → Obtiene las cuentas asociadas a una persona.  
-- **`POST /`** → Busca una cuenta por alias o número de cuenta.  
-- **`POST /create`** → Crea una nueva transferencia.  
+- **`GET /:UserToken/:accountToken/transfer/agenda`** → Obtiene la agenda de contactos para transferencias.  
+- **`POST /:UserToken/:accountToken/transfer/person`** → Obtiene las cuentas asociadas a una persona.  
+- **`POST /:UserToken/:accountToken/transfer/`** → Busca una cuenta por alias o número de cuenta.  
+- **`POST /:UserToken/:accountToken/transfer/create`** → Crea una nueva transferencia.  
 
 ## 🛠️ Tecnologías Utilizadas  
 - **TypeScript**  
