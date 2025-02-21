@@ -52,6 +52,7 @@ Esta API permite la autenticación de usuarios, la creación de cuentas en difer
 
 ![subModel_person](https://github.com/user-attachments/assets/02acda59-0543-4dc7-ab83-ffec40da84d9)
 
+
 **`Submodel BANKING`** 
 
 
