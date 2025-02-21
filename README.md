@@ -44,12 +44,15 @@ Esta API permite la autenticación de usuarios, la creación de cuentas en difer
 - **PostgreSQL**  
 - **JWT para autenticación**  
 
-## 📌 Instalación  
-1. Clonar el repositorio:  
-   ```sh
-   git clone <URL_DEL_REPOSITORIO>
-   cd <NOMBRE_DEL_PROYECTO>
+
+## Modelo fisico de la base de datos
+
+**`Submodel PERSON`** 
+![subModel_person](https://github.com/user-attachments/assets/02acda59-0543-4dc7-ab83-ffec40da84d9)
+
+**`Submodel BANKING`** 
+![subModel_banking](https://github.com/user-attachments/assets/d352b097-c1bd-4bc8-a91c-4ae4b4ab4e61)
 
 
-![diagrama fisico](https://github.com/user-attachments/assets/803c213c-2175-46a9-9b8e-de6e54eddbae)
+
 
