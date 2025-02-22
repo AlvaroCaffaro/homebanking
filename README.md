@@ -33,7 +33,7 @@ Esta API permite la autenticación de usuarios, la creación de cuentas en difer
 - **`GET /:UserToken/:accountToken/`** → Obtiene información de la cuenta.  
 
 ### 💸 Transferencias (`transferRouter`)  
-- **`GET /:UserToken/:accountToken/transfer/agenda`** → Obtiene la agenda de contactos para transferencias.  
+- **`GET /:UserToken/:accountToken/transfer/agenda`** → Obtiene la lista de las últimas personas a las que se les realizó una transferencia. 
 - **`POST /:UserToken/:accountToken/transfer/person`** → Obtiene las cuentas asociadas a una persona.  
 - **`POST /:UserToken/:accountToken/transfer/`** → Busca una cuenta por alias o número de cuenta.  
 - **`POST /:UserToken/:accountToken/transfer/create`** → Crea una nueva transferencia.  
